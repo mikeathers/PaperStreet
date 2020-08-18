@@ -10,5 +10,10 @@
       <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\PaperStreet.Authentication.Data\PaperStreet.Authentication.Data.csproj" />
+      <ProjectReference Include="..\PaperStreet.Infra.IoC\PaperStreet.Infra.IoC.csproj" />
+    </ItemGroup>
+
 
 </Project>

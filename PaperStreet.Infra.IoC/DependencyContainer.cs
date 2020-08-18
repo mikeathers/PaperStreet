@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Infra.Bus;
 
@@ -33,7 +34,7 @@ namespace PaperStreet.Infra.IoC
             //services.AddTransient<IAccountRepository, AccountRepository>();
             //services.AddTransient<ITransferRepository, TransferRepository>();
             //services.AddTransient<BankingDbContext>();
-            //services.AddTransient<TransferDbContext>();
+            services.AddTransient<AuthenticationDbContext>();
         }
     }
 }

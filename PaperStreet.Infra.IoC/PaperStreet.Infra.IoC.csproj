@@ -9,6 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\PaperStreet.Authentication.Data\PaperStreet.Authentication.Data.csproj" />
       <ProjectReference Include="..\PaperStreet.Domain.Core\PaperStreet.Domain.Core.csproj" />
       <ProjectReference Include="..\PaperStreet.Infra.Bus\PaperStreet.Infra.Bus.csproj" />
     </ItemGroup>

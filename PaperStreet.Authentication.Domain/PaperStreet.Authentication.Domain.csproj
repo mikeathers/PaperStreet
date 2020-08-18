@@ -10,7 +10,10 @@
       <Folder Include="EventHandlers" />
       <Folder Include="Events" />
       <Folder Include="Interfaces" />
-      <Folder Include="Models" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2" />
     </ItemGroup>
 
 </Project>
