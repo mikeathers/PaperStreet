@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Data.Context;
+using PaperStreet.Authentication.Infra.Security;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Infra.Bus;
 
@@ -27,13 +29,10 @@ namespace PaperStreet.Infra.IoC
             //services.AddTransient<IRequestHandler<CreateTransferFundsCommand, bool>, TransferFundsCommandHandler>();
             
             // Application Services
-            //services.AddTransient<IAccountService, AccountService>();
-            //services.AddTransient<ITransferService, TransferService>();
+            services.AddTransient<IJwtGenerator, JwtGenerator>();
+            
             
             // Data
-            //services.AddTransient<IAccountRepository, AccountRepository>();
-            //services.AddTransient<ITransferRepository, TransferRepository>();
-            //services.AddTransient<BankingDbContext>();
             services.AddTransient<AuthenticationDbContext>();
         }
     }

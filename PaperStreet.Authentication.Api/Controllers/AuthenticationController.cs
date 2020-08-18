@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PaperStreet.Authentication.Application.Commands;
+using PaperStreet.Authentication.Domain.Models;
 
 namespace PaperStreet.Authentication.Api.Controllers
 {
-    [ApiController]
-    [Route("api/v1/[controller]")]
-    public class AuthenticationController : ControllerBase
+
+    public class AuthenticationController : BaseController
     {
-        [HttpGet]
-        public ActionResult Get()
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public async Task<ActionResult<User>> Register(Register.Command command)
         {
-           return Ok();
+            return await Mediator.Send(command);
         }
     }
 }

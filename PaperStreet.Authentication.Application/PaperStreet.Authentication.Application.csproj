@@ -6,8 +6,14 @@
 
     <ItemGroup>
       <Folder Include="DTOs" />
-      <Folder Include="Interfaces" />
+      <Folder Include="EventHandlers" />
+      <Folder Include="Events" />
       <Folder Include="Services" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PaperStreet.Authentication.Data\PaperStreet.Authentication.Data.csproj" />
+      <ProjectReference Include="..\PaperStreet.Authentication.Domain\PaperStreet.Authentication.Domain.csproj" />
     </ItemGroup>
 
 </Project>
