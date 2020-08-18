@@ -1,0 +1,11 @@
+bin
+obj
+.vscode
+.DS_Store
+appsettings.json
+*.db
+wwwroot
+
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
