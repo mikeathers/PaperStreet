@@ -5,9 +5,9 @@ using PaperStreet.Authentication.Domain.Validators;
 
 namespace PaperStreet.Authentication.Application.Commands
 {
-    public abstract class Register
+    public class Register
     {
-        public abstract class Command : IRequest<User>
+        public class Command : IRequest<User>
         {
             public string DisplayName { get; set; }
             public string Username { get; set; }
@@ -15,9 +15,9 @@ namespace PaperStreet.Authentication.Application.Commands
             public string Password { get; set; }
         }
 
-        public class CommandValidator : AbstractValidator<Command>
+        public class RegisterCommandValidator : AbstractValidator<Command>
         {
-            public CommandValidator()
+            public RegisterCommandValidator()
             {
                 RuleFor(x => x.DisplayName).NotEmpty();
                 RuleFor(x => x.Username).NotEmpty();

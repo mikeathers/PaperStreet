@@ -30,7 +30,7 @@ namespace PaperStreet.Authentication.Api.Middleware
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception ex, ILogger<ErrorHandlingMiddleware> logger)
+        private static async Task HandleExceptionAsync(HttpContext context, Exception ex, ILogger<ErrorHandlingMiddleware> logger)
         {
             object errors = null;
 
@@ -49,6 +49,7 @@ namespace PaperStreet.Authentication.Api.Middleware
             }
 
             context.Response.ContentType = "application/json";
+            
             if (errors != null)
             {
                 var result = JsonSerializer.Serialize(new 

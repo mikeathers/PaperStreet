@@ -12,13 +12,13 @@ using PaperStreet.Authentication.Domain.Models;
 
 namespace PaperStreet.Authentication.Application.CommandHandlers
 {
-    public abstract class Register : IRequestHandler<Commands.Register.Command, User>
+    public class Register : IRequestHandler<Commands.Register.Command, User>
     {
         private readonly AuthenticationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
 
-        protected Register(AuthenticationDbContext context, UserManager<AppUser> userManager, IJwtGenerator jwtGenerator)
+        public Register(AuthenticationDbContext context, UserManager<AppUser> userManager, IJwtGenerator jwtGenerator)
         {
             _context = context;
             _userManager = userManager;
@@ -29,7 +29,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
         {
             if (await _context.Users.Where(x => x.Email == request.Email).AnyAsync(cancellationToken: cancellationToken))
                 throw new RestException(HttpStatusCode.BadRequest, new {Email = "Email already exists"});
-
+            
             if (await _context.Users.Where(x => x.UserName == request.Username).AnyAsync(cancellationToken: cancellationToken))
                 throw new RestException(HttpStatusCode.BadRequest, new {Username = "Username already exists"});
 

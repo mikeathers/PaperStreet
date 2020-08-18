@@ -5,15 +5,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="DTOs" />
       <Folder Include="EventHandlers" />
       <Folder Include="Events" />
-      <Folder Include="Services" />
+      <Folder Include="Queries" />
+      <Folder Include="QueryHandler" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\PaperStreet.Authentication.Data\PaperStreet.Authentication.Data.csproj" />
       <ProjectReference Include="..\PaperStreet.Authentication.Domain\PaperStreet.Authentication.Domain.csproj" />
+      <ProjectReference Include="..\PaperStreet.Domain.Core\PaperStreet.Domain.Core.csproj" />
     </ItemGroup>
 
 </Project>

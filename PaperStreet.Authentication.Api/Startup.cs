@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Text;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -14,9 +15,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PaperStreet.Authentication.Api.Middleware;
 using PaperStreet.Authentication.Application.CommandHandlers;
+using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Infra.IoC;
+using Register = PaperStreet.Authentication.Application.Commands.Register;
 
 namespace PaperStreet.Authentication.Api
 {
@@ -45,16 +48,16 @@ namespace PaperStreet.Authentication.Api
                     Version = "v1"
                 });
             });
-            
-            services.AddMediatR(typeof(Startup));
 
             AddIdentity(services);
             AddJwtAuthentication(services, Configuration);
             RegisterIoCServices(services);
             
+            services.AddMediatR(typeof(Register.Command).Assembly);
+            
             services.AddControllers().AddFluentValidation(cfg => 
             {
-                cfg.RegisterValidatorsFromAssemblyContaining<Register>();
+                cfg.RegisterValidatorsFromAssemblyContaining<Register.Command>();
             });
         }
 
@@ -96,7 +99,7 @@ namespace PaperStreet.Authentication.Api
             
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                // app.UseDeveloperExceptionPage();
             }
 
             app.UseHttpsRedirection();

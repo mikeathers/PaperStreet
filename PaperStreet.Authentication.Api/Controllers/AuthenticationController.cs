@@ -11,7 +11,6 @@ using PaperStreet.Authentication.Domain.Models;
 
 namespace PaperStreet.Authentication.Api.Controllers
 {
-
     public class AuthenticationController : BaseController
     {
         [AllowAnonymous]
