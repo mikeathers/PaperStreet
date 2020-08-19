@@ -5,7 +5,7 @@ using PaperStreet.Authentication.Domain.Validators;
 
 namespace PaperStreet.Authentication.Application.Commands
 {
-    public class Register
+    public class RegisterUser
     {
         public class Command : IRequest<User>
         {

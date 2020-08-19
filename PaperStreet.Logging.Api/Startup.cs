@@ -5,20 +5,21 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PaperStreet.Authentication.Api.Middleware;
-using PaperStreet.Authentication.Application.Commands;
-using PaperStreet.Authentication.Data.Context;
-using PaperStreet.Authentication.Domain.Models;
+using PaperStreet.Domain.Core.Bus;
+using PaperStreet.Domain.Core.Events.User;
 using PaperStreet.Infra.IoC;
+using PaperStreet.Logging.Api.Middleware;
+using PaperStreet.Logging.Application.EventHandlers.User;
+using PaperStreet.Logging.Application.Queries.User;
+using PaperStreet.Logging.Data.Context;
 
-namespace PaperStreet.Authentication.Api
+namespace PaperStreet.Logging.Api
 {
     public class Startup
     {
@@ -32,32 +33,31 @@ namespace PaperStreet.Authentication.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<AuthenticationDbContext>(options =>
+            services.AddDbContext<LoggingDbContext>(options =>
             {
-                options.UseMySql(Configuration.GetConnectionString("AuthenticationDbConnection"));
+                options.UseMySql(Configuration.GetConnectionString("LoggingDbConnection"));
             });
             
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Authentication Microservice",
+                    Title = "Logging Microservice",
                     Version = "v1"
                 });
             });
-
-            AddIdentity(services);
+            
             AddJwtAuthentication(services, Configuration);
             RegisterIoCServices(services);
             
-            services.AddMediatR(typeof(RegisterUser.Command).Assembly);
+            services.AddMediatR(typeof(AllUserLogs.Query).Assembly);
             
             services.AddControllers().AddFluentValidation(cfg => 
             {
-                cfg.RegisterValidatorsFromAssemblyContaining<RegisterUser.Command>();
+                cfg.RegisterValidatorsFromAssemblyContaining<AllUserLogs.Query>();
             });
         }
-
+        
         private static void AddJwtAuthentication(IServiceCollection services, IConfiguration config)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
@@ -76,15 +76,7 @@ namespace PaperStreet.Authentication.Api
                 });
         }
 
-        private static void AddIdentity(IServiceCollection services)
-        {
-            var builder = services.AddIdentityCore<AppUser>();
-            var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
-            identityBuilder.AddEntityFrameworkStores<AuthenticationDbContext>();
-            identityBuilder.AddSignInManager<SignInManager<AppUser>>();
-        }
-
-        private static void RegisterIoCServices(IServiceCollection services)
+        private void RegisterIoCServices(IServiceCollection services)
         {
             DependencyContainer.RegisterServices(services);
         }
@@ -103,16 +95,23 @@ namespace PaperStreet.Authentication.Api
 
             app.UseRouting();
 
-            app.UseAuthentication();
             app.UseAuthorization();
             
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Microservice v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Logging Microservice v1");
             });
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            
+            ConfigureEventBus(app);
+        }
+        
+        private static void ConfigureEventBus(IApplicationBuilder app)
+        {
+            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<UserRegisteredEvent, UserRegisteredEventHandler>();
         }
     }
 }

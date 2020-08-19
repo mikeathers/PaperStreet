@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using PaperStreet.Domain.Core.Models;
 
-namespace PaperStreet.Authentication.Api.Middleware
+namespace PaperStreet.Logging.Api.Middleware
 {
     public class ErrorHandlingMiddleware
     {

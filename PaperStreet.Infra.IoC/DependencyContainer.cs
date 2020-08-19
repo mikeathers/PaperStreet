@@ -1,13 +1,13 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using PaperStreet.Authentication.Application.CommandHandlers;
-using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Data.Context;
-using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Authentication.Infra.Security;
 using PaperStreet.Domain.Core.Bus;
+using PaperStreet.Domain.Core.Events.User;
 using PaperStreet.Infra.Bus;
+using PaperStreet.Logging.Application.EventHandlers.User;
+using PaperStreet.Logging.Data.Context;
 
 namespace PaperStreet.Infra.IoC
 {
@@ -23,20 +23,17 @@ namespace PaperStreet.Infra.IoC
             });
             
             // Subscriptions
-            //services.AddTransient<TransferEventHandler>();
+            services.AddTransient<UserRegisteredEventHandler>();
             
             // Domain Events
-            //services.AddTransient<IEventHandler<TransferCreatedEvent>, TransferEventHandler>();
-            
-            // Domain User Commands
-            //services.AddTransient<IRequestHandler<Register.Command, User>, Register>();
-            
+            services.AddTransient<IEventHandler<UserRegisteredEvent>, UserRegisteredEventHandler>();
+
             // Application Services
             services.AddTransient<IJwtGenerator, JwtGenerator>();
-            
-            
+
             // Data
             services.AddTransient<AuthenticationDbContext>();
+            services.AddTransient<LoggingDbContext>();
         }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Net;
 
-namespace PaperStreet.Authentication.Domain.Models
+namespace PaperStreet.Domain.Core.Models
 {
     public class RestException : Exception
     {

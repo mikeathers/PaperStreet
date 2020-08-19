@@ -24,7 +24,7 @@ namespace PaperStreet.Authentication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(Register.Command command)
+        public async Task<ActionResult<User>> Register(RegisterUser.Command command)
         {
             var user = await _mediator.Send(command);
             return Ok(user);

@@ -9,23 +9,29 @@ using Microsoft.EntityFrameworkCore;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Authentication.Domain.Models;
+using PaperStreet.Domain.Core.Bus;
+using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.CommandHandlers
 {
-    public class Register : IRequestHandler<Commands.Register.Command, User>
+    public class RegisterUser : IRequestHandler<Commands.RegisterUser.Command, User>
     {
         private readonly AuthenticationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
+        private readonly IEventBus _eventBus;
 
-        public Register(AuthenticationDbContext context, UserManager<AppUser> userManager, IJwtGenerator jwtGenerator)
+        public RegisterUser(AuthenticationDbContext context, UserManager<AppUser> userManager,
+            IJwtGenerator jwtGenerator, IEventBus eventBus)
         {
             _context = context;
             _userManager = userManager;
             _jwtGenerator = jwtGenerator;
+            _eventBus = eventBus;
         }
 
-        public async Task<User> Handle(Commands.Register.Command request, CancellationToken cancellationToken)
+        public async Task<User> Handle(Commands.RegisterUser.Command request, CancellationToken cancellationToken)
         {
             if (await _context.Users.Where(x => x.Email == request.Email).AnyAsync(cancellationToken: cancellationToken))
                 throw new RestException(HttpStatusCode.BadRequest, new {Email = "Email already exists"});
@@ -44,19 +50,19 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 
             var result = await _userManager.CreateAsync(user, request.Password);
 
-            if (result.Succeeded)
+            if (!result.Succeeded) throw new Exception("Problem creating user");
+            
+            _eventBus.Publish(new UserRegisteredEvent(user.Id, user.Email));
+                
+            return new User
             {
-                return new User
-                {
-                    DisplayName = user.DisplayName,
-                    Token = _jwtGenerator.CreateToken(user),
-                    RefreshToken = user.RefreshToken,
-                    Username = user.UserName,
-                    Image = null
-                };
-            }
+                DisplayName = user.DisplayName,
+                Token = _jwtGenerator.CreateToken(user),
+                RefreshToken = user.RefreshToken,
+                Username = user.UserName,
+                Image = null
+            };
 
-            throw new Exception("Problem creating user");
         }
     }
 }

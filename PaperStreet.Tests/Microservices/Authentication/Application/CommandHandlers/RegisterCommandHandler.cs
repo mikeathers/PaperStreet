@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using PaperStreet.Authentication.Application.CommandHandlers;
 using PaperStreet.Authentication.Data.Context;
-using PaperStreet.Authentication.Domain.Models;
+using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Models;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
 using PaperStreet.Tests.Microservices.Authentication.SeedData;
 using TestSupport.EfHelpers;
@@ -30,7 +31,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 await context.Database.EnsureCreatedAsync();
                 context.SeedUserData();
 
-                var registerCommand = new PaperStreet.Authentication.Application.Commands.Register.Command
+                var registerCommand = new PaperStreet.Authentication.Application.Commands.RegisterUser.Command
                 {
                     DisplayName = "Test User",
                     Username = "test@gmail.com",
@@ -40,8 +41,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
 
                 var mockUserManager = _fixture.UserManager;
                 var mockJwtGenerator = _fixture.JwtGenerator;
+                var mockEventBus = _fixture.EventBus;
                 
-                var registerCommandHandler = new Register(context, mockUserManager, mockJwtGenerator);
+                var registerCommandHandler = new RegisterUser(context, mockUserManager, mockJwtGenerator, mockEventBus);
 
                 await Assert.ThrowsAsync<RestException>(() =>
                     registerCommandHandler.Handle(registerCommand, CancellationToken.None));
@@ -57,7 +59,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 await context.Database.EnsureCreatedAsync();
                 context.SeedUserData();
 
-                var registerCommand = new PaperStreet.Authentication.Application.Commands.Register.Command
+                var registerCommand = new PaperStreet.Authentication.Application.Commands.RegisterUser.Command
                 {
                     DisplayName = "Test User",
                     Username = "test@gmail.com",
@@ -67,8 +69,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
 
                 var mockUserManager = _fixture.UserManager;
                 var mockJwtGenerator = _fixture.JwtGenerator;
+                var mockEventBus = _fixture.EventBus;
                 
-                var registerCommandHandler = new Register(context, mockUserManager, mockJwtGenerator);
+                var registerCommandHandler = new RegisterUser(context, mockUserManager, mockJwtGenerator, mockEventBus);
 
                 await Assert.ThrowsAsync<RestException>(() =>
                     registerCommandHandler.Handle(registerCommand, CancellationToken.None));
@@ -84,7 +87,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 await context.Database.EnsureCreatedAsync();
                 context.SeedUserData();
 
-                var registerCommand = new PaperStreet.Authentication.Application.Commands.Register.Command
+                var registerCommand = new PaperStreet.Authentication.Application.Commands.RegisterUser.Command
                 {
                     DisplayName = "Test User",
                     Username = "testuser@gmail.com",
@@ -95,14 +98,48 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 var createdUser = _fixture.TestUser;
                 var mockUserManager = _fixture.UserManager;    
                 var mockJwtGenerator = _fixture.JwtGenerator;
+                var mockEventBus = _fixture.EventBus;
                 
-                mockUserManager.CreateAsync(createdUser, registerCommand.Password).ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
+                mockUserManager.CreateAsync(createdUser, registerCommand.Password)
+                    .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
 
-                var registerCommandHandler = new Register(context, mockUserManager, mockJwtGenerator);
+                var registerCommandHandler = new RegisterUser(context, mockUserManager, mockJwtGenerator, mockEventBus);
                 var registeredUser = await registerCommandHandler.Handle(registerCommand, CancellationToken.None);
                 
                 Assert.NotNull(registeredUser);
                 Assert.Equal(registeredUser.Username, createdUser.UserName);
+            }
+        }
+        
+        [Fact]
+        public async Task GivenRegisterCommandHandler_WhenNewUserHasRegistered_ThenUserRegisteredEventShouldBePublished()
+        {
+            var options = SqliteInMemory.CreateOptions<AuthenticationDbContext>();
+            await using var context = new AuthenticationDbContext(options);
+            {
+                await context.Database.EnsureCreatedAsync();
+                context.SeedUserData();
+
+                var registerCommand = new PaperStreet.Authentication.Application.Commands.RegisterUser.Command
+                {
+                    DisplayName = "Test User",
+                    Username = "testuser@gmail.com",
+                    Email = "testuser@gmail.com",
+                    Password = "password123"
+                };
+
+                var createdUser = _fixture.TestUser;
+                var mockUserManager = _fixture.UserManager;    
+                var mockJwtGenerator = _fixture.JwtGenerator;
+                var mockEventBus = _fixture.EventBus;
+                
+                mockUserManager.CreateAsync(createdUser, registerCommand.Password)
+                    .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
+
+                var registerCommandHandler = new RegisterUser(context, mockUserManager, mockJwtGenerator, mockEventBus);
+                await registerCommandHandler.Handle(registerCommand, CancellationToken.None);
+                
+                mockEventBus.Received().Publish(Arg.Any<UserRegisteredEvent>());
             }
         }
     }

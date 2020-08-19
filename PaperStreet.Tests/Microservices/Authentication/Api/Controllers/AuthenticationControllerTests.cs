@@ -11,7 +11,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
         [Fact]
         public void GivenRegisterPostMethod_WhenReceivesCorrectCommand_ThenFireMediatorSendMethod()
         {
-            var registerCommand = new Register.Command
+            var registerCommand = new RegisterUser.Command
             {
                 DisplayName = "Test User",
                 Username = "test@gmail.com",
