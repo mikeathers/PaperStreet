@@ -11,13 +11,23 @@ using PaperStreet.Authentication.Domain.Models;
 
 namespace PaperStreet.Authentication.Api.Controllers
 {
-    public class AuthenticationController : BaseController
+    [Route("api/v1/[controller]")]
+    [ApiController]
+    public class AuthenticationController : ControllerBase
     {
+        private readonly IMediator _mediator;
+
+        public AuthenticationController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(Register.Command command)
         {
-            return await Mediator.Send(command);
+            var user = await _mediator.Send(command);
+            return Ok(user);
         }
     }
 }

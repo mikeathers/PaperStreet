@@ -9,5 +9,10 @@ namespace PaperStreet.Authentication.Data.Context
         public AuthenticationDbContext(DbContextOptions options) : base(options)
         {
         }
+
+        public AuthenticationDbContext()
+        {
+            
+        }
     }
 }
