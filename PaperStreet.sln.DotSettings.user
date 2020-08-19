@@ -6,5 +6,7 @@
     &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Authentication.Application.CommandHandlers.RegisterCommandHandler.GivenRegisterCommandHandler_WhenUserUserNameAlreadyExists_ThenThrowsBadRequestException&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Authentication.Application.CommandHandlers.RegisterCommandHandler.GivenRegisterCommandHandler_WhenNewUserDetailsAreProvided_ThenCreatesNewUser&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Authentication.Application.CommandHandlers.RegisterCommandHandler.GivenRegisterCommandHandler_WhenNewUserHasRegistered_ThenUserRegisteredEventShouldBeFired&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Logging.Api.Controllers.LoggingControllerTests.GivenAllAuthenticationLogsGetMethod_WhenReceivesCorrectQuery_ThenFireMediatorSendMethod&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Logging.Application.EventHandlers.User.UserRegisteredEventHandlerTests.UserRegisteredEventHandler_WhenCorrectLogDataIsReceived_ThenShouldPersistLog&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

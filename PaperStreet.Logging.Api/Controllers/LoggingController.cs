@@ -21,7 +21,7 @@ namespace PaperStreet.Logging.Api.Controllers
         [HttpGet, Route("all-authentication-logs")]
         public async Task<ActionResult<List<AuthenticationLog>>> GetAllAuthenticationLogs()
         {
-            return await _mediator.Send(new AllUserLogs.Query());
+            return await _mediator.Send(new AllAuthenticationLogs.Query());
         }
     }
 }

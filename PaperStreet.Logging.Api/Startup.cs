@@ -50,11 +50,11 @@ namespace PaperStreet.Logging.Api
             AddJwtAuthentication(services, Configuration);
             RegisterIoCServices(services);
             
-            services.AddMediatR(typeof(AllUserLogs.Query).Assembly);
+            services.AddMediatR(typeof(AllAuthenticationLogs.Query).Assembly);
             
             services.AddControllers().AddFluentValidation(cfg => 
             {
-                cfg.RegisterValidatorsFromAssemblyContaining<AllUserLogs.Query>();
+                cfg.RegisterValidatorsFromAssemblyContaining<AllAuthenticationLogs.Query>();
             });
         }
         

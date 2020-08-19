@@ -8,16 +8,16 @@ using PaperStreet.Logging.Domain.Models;
 
 namespace PaperStreet.Logging.Application.QueryHandlers.User
 {
-    public class AllUserLogs : IRequestHandler<Queries.User.AllUserLogs.Query, List<AuthenticationLog>>
+    public class AllAuthenticationLogs : IRequestHandler<Queries.User.AllAuthenticationLogs.Query, List<AuthenticationLog>>
     {
         private readonly LoggingDbContext _context;
 
-        public AllUserLogs(LoggingDbContext context)
+        public AllAuthenticationLogs(LoggingDbContext context)
         {
             _context = context;
         }
 
-        public async Task<List<AuthenticationLog>> Handle(Queries.User.AllUserLogs.Query request, CancellationToken cancellationToken)
+        public async Task<List<AuthenticationLog>> Handle(Queries.User.AllAuthenticationLogs.Query request, CancellationToken cancellationToken)
         {
             return await _context.AuthenticationLogs.ToListAsync(cancellationToken: cancellationToken);
         }
