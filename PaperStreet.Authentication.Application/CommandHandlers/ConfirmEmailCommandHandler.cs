@@ -46,7 +46,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 
             return new User
             {
-                DisplayName = user.DisplayName,
+                FirstName = user.FirstName,
                 Token = _jwtGenerator.CreateToken(user),
                 RefreshToken = user.RefreshToken,
                 Email = user.Email,

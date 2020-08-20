@@ -14,7 +14,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
         {
             var registerCommand = new RegisterUser.Command
             {
-                DisplayName = "Test User",
+                FirstName = "Test User",
                 Email = "test@gmail.com",
                 Password = "password123"
             };

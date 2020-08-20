@@ -21,14 +21,16 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IEventBus _eventBus;
+        private readonly IEmailBuilder _emailBuilder;
 
         public RegisterUserCommandHandler(AuthenticationDbContext context, UserManager<AppUser> userManager,
-            IJwtGenerator jwtGenerator, IEventBus eventBus)
+            IJwtGenerator jwtGenerator, IEventBus eventBus, IEmailBuilder emailBuilder)
         {
             _context = context;
             _userManager = userManager;
             _jwtGenerator = jwtGenerator;
             _eventBus = eventBus;
+            _emailBuilder = emailBuilder;
         }
 
         public async Task<User> Handle(Commands.RegisterUser.Command request, CancellationToken cancellationToken)
@@ -38,7 +40,8 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 
             var user = new AppUser
             {
-                DisplayName = request.DisplayName,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 Email = request.Email,
                 UserName = request.Email,
                 RefreshToken = _jwtGenerator.GenerateRefreshToken(),
@@ -49,11 +52,15 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 
             if (!result.Succeeded) throw new Exception("Problem creating user");
             
+            var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            
             _eventBus.Publish(new UserRegisteredEvent(user.Id, user.Email));
-                
+            _emailBuilder.ConfirmationEmail(user.FirstName, user.Id, confirmEmailToken);
+
             return new User
             {
-                DisplayName = user.DisplayName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Token = _jwtGenerator.CreateToken(user),
                 RefreshToken = user.RefreshToken,
                 Email = user.Email,

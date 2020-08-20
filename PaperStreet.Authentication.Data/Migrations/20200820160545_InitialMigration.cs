@@ -41,7 +41,8 @@ namespace PaperStreet.Authentication.Data.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
-                    DisplayName = table.Column<string>(nullable: true),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
                     RefreshToken = table.Column<string>(nullable: true),
                     RefreshTokenExpiry = table.Column<DateTime>(nullable: false)
                 },

@@ -24,7 +24,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.SeedData
             {
                 new AppUser()
                 {
-                    DisplayName = "Test User",
+                    FirstName = "Test",
+                    LastName = "User",
                     UserName = "test@gmail.com",
                     Email = "test@gmail.com",
                 }
@@ -38,7 +39,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.SeedData
             {
                 new AppUser()
                 {
-                    DisplayName = "Test User",
+                    FirstName = "Test",
+                    LastName = "User",
                     UserName = "test@gmail.com",
                     Email = "test@gmail.com",
                 }

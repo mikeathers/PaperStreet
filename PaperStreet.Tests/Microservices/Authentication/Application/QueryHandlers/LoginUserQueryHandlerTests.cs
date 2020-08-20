@@ -1,10 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
+using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Application.Queries;
 using PaperStreet.Authentication.Application.QueryHandlers;
+using PaperStreet.Authentication.Domain.Models;
+using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.User;
 using PaperStreet.Domain.Core.Models;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
@@ -14,80 +18,62 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
 {
     public class LoginUserQueryHandlerTests : IClassFixture<AuthenticationFixture>
     {
-        private readonly AuthenticationFixture _fixture;
+        private readonly UserManager<AppUser> _mockUserManager;
+        private readonly IJwtGenerator _mockJwtGenerator;
+        private readonly IEventBus _mockEventBus;
+        private readonly LoginUser.Query _query;
+        private readonly AppUser _user;
 
         public LoginUserQueryHandlerTests(AuthenticationFixture fixture)
         {
-            _fixture = fixture;
+            var localFixture = fixture;
+            _mockUserManager = localFixture.UserManager;
+            _mockJwtGenerator = localFixture.JwtGenerator;
+            _mockEventBus = localFixture.EventBus;
+            _user = localFixture.TestUser;
+            
+            _query = new LoginUser.Query
+            {
+                Email = "testuser@gmail.com",
+                Password = "Password123!"
+            };
         }
 
         [Fact]
         public async Task GivenLoginUserQueryHandler_WhenCorrectLoginInfoProvided_ThenShouldAuthenticateUser()
         {
-            var loginQuery = new LoginUser.Query
-            {
-                Email = "testuser@gmail.com",
-                Password = "Password123!"
-            };
-
-            var existingUser = _fixture.TestUser;
-            var mockUserManager = _fixture.UserManager;
-            var mockEventBus = _fixture.EventBus;
-            var mockJwtGenerator = Substitute.For<IJwtGenerator>();
-
-            mockUserManager.FindByEmailAsync(loginQuery.Email).ReturnsForAnyArgs(existingUser);
-            mockUserManager.CheckPasswordAsync(existingUser, loginQuery.Password).ReturnsForAnyArgs(true);
+            _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
+            _mockUserManager.CheckPasswordAsync(_user, _query.Password).ReturnsForAnyArgs(true);
             
-            var loginUserQueryHandler = new LoginUserQueryHandler(mockUserManager, mockJwtGenerator, mockEventBus);
+            var loginUserQueryHandler = new LoginUserQueryHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
 
-            var authenticatedUser = await loginUserQueryHandler.Handle(loginQuery, CancellationToken.None);
+            var authenticatedUser = await loginUserQueryHandler.Handle(_query, CancellationToken.None);
             
             Assert.NotNull(authenticatedUser);
-            Assert.Equal(authenticatedUser.Email, loginQuery.Email);
+            Assert.Equal(authenticatedUser.Email, _query.Email);
         }
         
         [Fact]
         public async Task GivenLoginUserQueryHandler_WhenIncorrectLoginInfoProvided_ThenShouldRaiseException()
         {
-            var loginQuery = new LoginUser.Query
-            {
-                Email = "testuser@gmail.com",
-                Password = "Password123!"
-            };
-
-            var mockUserManager = _fixture.UserManager;
-            var mockEventBus = _fixture.EventBus;
-            var mockJwtGenerator = Substitute.For<IJwtGenerator>();
-
-            mockUserManager.FindByEmailAsync(loginQuery.Email).ReturnsNullForAnyArgs();
+            _mockUserManager.FindByEmailAsync(_query.Email).ReturnsNullForAnyArgs();
             
-            var loginUserQueryHandler = new LoginUserQueryHandler(mockUserManager, mockJwtGenerator, mockEventBus);
+            var loginUserQueryHandler = new LoginUserQueryHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
             
-            await Assert.ThrowsAsync<RestException>(() => loginUserQueryHandler.Handle(loginQuery, CancellationToken.None));
+            await Assert.ThrowsAsync<RestException>(() => loginUserQueryHandler.Handle(_query, CancellationToken.None));
         }
         
         [Fact]
         public async Task GivenLoginUserQueryHandler_WhenUserAuthenticated_ThenShouldPublishUserLoginEvent()
         {
-            var loginQuery = new LoginUser.Query
-            {
-                Email = "testuser@gmail.com",
-                Password = "Password123!"
-            };
-
-            var existingUser = _fixture.TestUser;
-            var mockUserManager = _fixture.UserManager;
-            var mockEventBus = _fixture.EventBus;
-            var mockJwtGenerator = Substitute.For<IJwtGenerator>();
-
-            mockUserManager.FindByEmailAsync(loginQuery.Email).ReturnsForAnyArgs(existingUser);
-            mockUserManager.CheckPasswordAsync(existingUser, loginQuery.Password).ReturnsForAnyArgs(true);
+            _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
+            _mockUserManager.CheckPasswordAsync(_user, _query.Password).ReturnsForAnyArgs(true);
             
-            var loginUserQueryHandler = new LoginUserQueryHandler(mockUserManager, mockJwtGenerator, mockEventBus);
+            var loginUserQueryHandler = new LoginUserQueryHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
 
-            await loginUserQueryHandler.Handle(loginQuery, CancellationToken.None);
+            await loginUserQueryHandler.Handle(_query, CancellationToken.None);
             
-            mockEventBus.Received().Publish(Arg.Any<UserLoginEvent>());
+            _mockEventBus.Received().Publish(Arg.Any<UserLoginEvent>());
         }
     }
 }

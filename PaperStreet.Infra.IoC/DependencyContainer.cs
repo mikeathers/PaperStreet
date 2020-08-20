@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using PaperStreet.Authentication.Application.Interfaces;
+using PaperStreet.Authentication.Application.Services;
 using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Authentication.Infra.Security;
 using PaperStreet.Domain.Core.Bus;
@@ -32,6 +33,7 @@ namespace PaperStreet.Infra.IoC
 
             // Application Services
             services.AddTransient<IJwtGenerator, JwtGenerator>();
+            services.AddTransient<IEmailBuilder, EmailBuilder>();
 
             // Data
             services.AddTransient<ILoggingRepository, LoggingRepository>();

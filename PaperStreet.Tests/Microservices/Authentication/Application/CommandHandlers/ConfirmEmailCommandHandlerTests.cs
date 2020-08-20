@@ -5,6 +5,9 @@ using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using PaperStreet.Authentication.Application.CommandHandlers;
 using PaperStreet.Authentication.Application.Commands;
+using PaperStreet.Authentication.Application.Interfaces;
+using PaperStreet.Authentication.Domain.Models;
+using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.User;
 using PaperStreet.Domain.Core.Models;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
@@ -14,40 +17,42 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
 {
     public class ConfirmEmailCommandHandlerTests : IClassFixture<AuthenticationFixture>
     {
-        private readonly AuthenticationFixture _fixture;
+        private readonly UserManager<AppUser> _mockUserManager;
+        private readonly IJwtGenerator _mockJwtGenerator;
+        private readonly IEventBus _mockEventBus;
+        private readonly ConfirmEmail.Command _command;
+        private readonly AppUser _user;
+        
+        private static string EmailConfirmationToken => "101010101";
+        private static string UserId => "1092093dk0230-2";
 
         public ConfirmEmailCommandHandlerTests(AuthenticationFixture fixture)
         {
-            _fixture = fixture;
+            var localFixture = fixture;
+            _mockUserManager = localFixture.UserManager;
+            _mockJwtGenerator = localFixture.JwtGenerator;
+            _mockEventBus = localFixture.EventBus;
+            _user = localFixture.TestUser;
+            _user.EmailConfirmed = true;
+            
+            _command = new ConfirmEmail.Command
+            {
+                UserId = "101010101",
+                EmailConfirmationCode = "1092093dk0230-2"
+            };
         }
 
         [Fact]
         public async Task GivenConfirmEmailCommandHandler_WhenReceivesCorrectCommand_ThenShouldConfirmUserAccountAndReturnUser()
         {
-            const string emailConfirmationToken = "101010101";
-            const string userId = "1092093dk0230-2";
-
-            var confirmEmailCommand = new ConfirmEmail.Command
-            {
-                UserId = userId,
-                EmailConfirmationCode = emailConfirmationToken
-            };
-            
-            var userToConfirm = _fixture.TestUser;
-            var mockUserManager = _fixture.UserManager;
-            var mockJwtGenerator = _fixture.JwtGenerator;
-            var mockEventBus = _fixture.EventBus;
-                
-            mockUserManager.ConfirmEmailAsync(userToConfirm, emailConfirmationToken)
+            _mockUserManager.ConfirmEmailAsync(_user, EmailConfirmationToken)
                             .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
-            mockUserManager.FindByIdAsync(userId).ReturnsForAnyArgs(userToConfirm);
+            _mockUserManager.FindByIdAsync(UserId).ReturnsForAnyArgs(_user);
 
-            userToConfirm.EmailConfirmed = true;
-            
-            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(mockUserManager, mockJwtGenerator, mockEventBus);
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
 
-            var confirmedUser = await confirmEmailCommandHandler.Handle(confirmEmailCommand, CancellationToken.None);
+            var confirmedUser = await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
             
             Assert.NotNull(confirmedUser);
             Assert.True(confirmedUser.EmailConfirmed);
@@ -56,57 +61,27 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         [Fact]
         public async Task GivenConfirmEmailCommandHandler_WhenUserIsNotFound_ThenShouldThrowRestException()
         {
-            const string emailConfirmationToken = "101010101";
-            const string userId = "1092093dk0230-2";
+            _mockUserManager.FindByIdAsync(UserId).ReturnsNullForAnyArgs();
 
-            var confirmEmailCommand = new ConfirmEmail.Command
-            {
-                UserId = userId,
-                EmailConfirmationCode = emailConfirmationToken
-            };
-            
-            var mockUserManager = _fixture.UserManager;
-            var mockJwtGenerator = _fixture.JwtGenerator;
-            var mockEventBus = _fixture.EventBus;
-            
-            mockUserManager.FindByIdAsync(userId).ReturnsNullForAnyArgs();
-
-            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(mockUserManager, mockJwtGenerator, mockEventBus);
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
 
             await Assert.ThrowsAsync<RestException>(() =>
-                confirmEmailCommandHandler.Handle(confirmEmailCommand, CancellationToken.None));
-            
+                confirmEmailCommandHandler.Handle(_command, CancellationToken.None));
         }
         
         [Fact]
         public async Task GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldPublishEmailConfirmedEvent()
         {
-            const string emailConfirmationToken = "101010101";
-            const string userId = "1092093dk0230-2";
-
-            var confirmEmailCommand = new ConfirmEmail.Command
-            {
-                UserId = userId,
-                EmailConfirmationCode = emailConfirmationToken
-            };
-            
-            var userToConfirm = _fixture.TestUser;
-            var mockUserManager = _fixture.UserManager;
-            var mockJwtGenerator = _fixture.JwtGenerator;
-            var mockEventBus = _fixture.EventBus;
-                
-            mockUserManager.ConfirmEmailAsync(userToConfirm, emailConfirmationToken)
+            _mockUserManager.ConfirmEmailAsync(_user, EmailConfirmationToken)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
-            mockUserManager.FindByIdAsync(userId).ReturnsForAnyArgs(userToConfirm);
+            _mockUserManager.FindByIdAsync(UserId).ReturnsForAnyArgs(_user);
 
-            userToConfirm.EmailConfirmed = true;
-            
-            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(mockUserManager, mockJwtGenerator, mockEventBus);
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
 
-            await confirmEmailCommandHandler.Handle(confirmEmailCommand, CancellationToken.None);
+            await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
             
-            mockEventBus.Received().Publish(Arg.Any<EmailConfirmedEvent>());
+            _mockEventBus.Received().Publish(Arg.Any<EmailConfirmedEvent>());
         }
     }
 }
