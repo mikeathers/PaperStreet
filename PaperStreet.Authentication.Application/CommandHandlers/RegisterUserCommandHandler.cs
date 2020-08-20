@@ -53,9 +53,9 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             if (!result.Succeeded) throw new Exception("Problem creating user");
             
             var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationEmail = _emailBuilder.ConfirmationEmail(user.FirstName, user.Id, confirmEmailToken);
             
             _eventBus.Publish(new UserRegisteredEvent(user.Id, user.Email));
-            _emailBuilder.ConfirmationEmail(user.FirstName, user.Id, confirmEmailToken);
 
             return new User
             {
@@ -67,7 +67,6 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
                 Image = null,
                 EmailConfirmed = false
             };
-
         }
     }
 }

@@ -4,6 +4,8 @@ using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Application.Services;
 using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Authentication.Infra.Security;
+using PaperStreet.Communication.Application.Interfaces;
+using PaperStreet.Communication.Application.Services;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.User;
 using PaperStreet.Infra.Bus;
@@ -34,6 +36,7 @@ namespace PaperStreet.Infra.IoC
             // Application Services
             services.AddTransient<IJwtGenerator, JwtGenerator>();
             services.AddTransient<IEmailBuilder, EmailBuilder>();
+            services.AddTransient<ISendGridClient, SendGridClient>();
 
             // Data
             services.AddTransient<ILoggingRepository, LoggingRepository>();

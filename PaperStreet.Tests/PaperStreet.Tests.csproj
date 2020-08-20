@@ -18,6 +18,7 @@
     <ItemGroup>
       <ProjectReference Include="..\PaperStreet.Authentication.Api\PaperStreet.Authentication.Api.csproj" />
       <ProjectReference Include="..\PaperStreet.Authentication.Domain\PaperStreet.Authentication.Domain.csproj" />
+      <ProjectReference Include="..\PaperStreet.Communication.Api\PaperStreet.Communication.Api.csproj" />
       <ProjectReference Include="..\PaperStreet.Logging.Api\PaperStreet.Logging.Api.csproj" />
     </ItemGroup>
 

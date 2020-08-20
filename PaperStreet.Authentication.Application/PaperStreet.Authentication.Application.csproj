@@ -6,6 +6,7 @@
 
     <ItemGroup>
       <Folder Include="EventHandlers" />
+      <Folder Include="Services" />
     </ItemGroup>
 
     <ItemGroup>
