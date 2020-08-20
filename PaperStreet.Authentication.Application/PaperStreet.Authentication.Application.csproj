@@ -6,8 +6,6 @@
 
     <ItemGroup>
       <Folder Include="EventHandlers" />
-      <Folder Include="Queries" />
-      <Folder Include="QueryHandlers" />
     </ItemGroup>
 
     <ItemGroup>

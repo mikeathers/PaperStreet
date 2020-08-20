@@ -15,14 +15,14 @@ using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.CommandHandlers
 {
-    public class RegisterUser : IRequestHandler<Commands.RegisterUser.Command, User>
+    public class RegisterUserCommandHandler : IRequestHandler<Commands.RegisterUser.Command, User>
     {
         private readonly AuthenticationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IEventBus _eventBus;
 
-        public RegisterUser(AuthenticationDbContext context, UserManager<AppUser> userManager,
+        public RegisterUserCommandHandler(AuthenticationDbContext context, UserManager<AppUser> userManager,
             IJwtGenerator jwtGenerator, IEventBus eventBus)
         {
             _context = context;
@@ -35,15 +35,12 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
         {
             if (await _context.Users.Where(x => x.Email == request.Email).AnyAsync(cancellationToken: cancellationToken))
                 throw new RestException(HttpStatusCode.BadRequest, new {Email = "Email already exists"});
-            
-            if (await _context.Users.Where(x => x.UserName == request.Username).AnyAsync(cancellationToken: cancellationToken))
-                throw new RestException(HttpStatusCode.BadRequest, new {Username = "Username already exists"});
 
             var user = new AppUser
             {
                 DisplayName = request.DisplayName,
                 Email = request.Email,
-                UserName = request.Username,
+                UserName = request.Email,
                 RefreshToken = _jwtGenerator.GenerateRefreshToken(),
                 RefreshTokenExpiry = DateTime.Now.AddDays(30)
             };
@@ -59,7 +56,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
                 DisplayName = user.DisplayName,
                 Token = _jwtGenerator.CreateToken(user),
                 RefreshToken = user.RefreshToken,
-                Username = user.UserName,
+                Email = user.Email,
                 Image = null
             };
 

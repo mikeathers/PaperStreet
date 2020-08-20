@@ -2,13 +2,13 @@ using PaperStreet.Domain.Core.KeyValuePairs;
 
 namespace PaperStreet.Domain.Core.Events.User
 {
-    public class UserRegisteredEvent : UserEvent
+    public class UserLoginEvent : UserEvent
     {
-        public UserRegisteredEvent(string userId, string email)
+        public UserLoginEvent(string userId, string email)
         {
             UserId = userId;
             Email = email;
-            EventDisplayName = EventDisplayNames.UserRegisteredEvent;
+            EventDisplayName = EventDisplayNames.UserLoginEvent;
         }
     }
 }

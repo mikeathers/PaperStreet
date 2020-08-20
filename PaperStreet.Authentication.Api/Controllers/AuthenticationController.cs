@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using PaperStreet.Authentication.Application.Commands;
+using PaperStreet.Authentication.Application.Queries;
 using PaperStreet.Authentication.Domain.Models;
 
 namespace PaperStreet.Authentication.Api.Controllers
@@ -27,6 +24,14 @@ namespace PaperStreet.Authentication.Api.Controllers
         public async Task<ActionResult<User>> Register(RegisterUser.Command command)
         {
             var user = await _mediator.Send(command);
+            return Ok(user);
+        }
+        
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<ActionResult<User>> Login(LoginUser.Query query)
+        {
+            var user = await _mediator.Send(query);
             return Ok(user);
         }
     }

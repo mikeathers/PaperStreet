@@ -20,7 +20,7 @@ namespace PaperStreet.Logging.Application.EventHandlers.User
         {
             var authenticationLog = new AuthenticationLog
             {
-                DisplayName = @event.DisplayName,
+                DisplayName = @event.EventDisplayName,
                 UserId = @event.UserId,
                 MessageType = @event.MessageType,
                 Timestamp = @event.Timestamp,

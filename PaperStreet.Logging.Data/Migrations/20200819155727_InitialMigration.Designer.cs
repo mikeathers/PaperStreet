@@ -25,7 +25,7 @@ namespace PaperStreet.Logging.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("DisplayName")
+                    b.Property<string>("EventDisplayName")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Email")

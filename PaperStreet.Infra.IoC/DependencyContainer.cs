@@ -7,7 +7,9 @@ using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.User;
 using PaperStreet.Infra.Bus;
 using PaperStreet.Logging.Application.EventHandlers.User;
+using PaperStreet.Logging.Application.Interfaces;
 using PaperStreet.Logging.Data.Context;
+using PaperStreet.Logging.Data.Repository;
 
 namespace PaperStreet.Infra.IoC
 {
@@ -32,6 +34,7 @@ namespace PaperStreet.Infra.IoC
             services.AddTransient<IJwtGenerator, JwtGenerator>();
 
             // Data
+            services.AddTransient<ILoggingRepository, LoggingRepository>();
             services.AddTransient<AuthenticationDbContext>();
             services.AddTransient<LoggingDbContext>();
         }
