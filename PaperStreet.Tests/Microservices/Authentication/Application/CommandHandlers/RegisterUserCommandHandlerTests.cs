@@ -50,7 +50,6 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             }
         }
         
-       
         [Fact]
         public async Task GivenRegisterUserCommandHandler_WhenNewUserDetailsAreProvided_ThenCreatesNewUser()
         {

@@ -34,5 +34,19 @@ namespace PaperStreet.Authentication.Api.Controllers
             var user = await _mediator.Send(query);
             return Ok(user);
         }
+        
+        [AllowAnonymous]
+        [HttpGet("confirm-email/{userId}/{emailConfirmationCode}")]
+        public async Task<ActionResult<User>> ConfirmEmail(string userId, string emailConfirmationCode)
+        {
+            var confirmEmailQuery = new ConfirmEmail.Command
+            {
+                UserId = userId,
+                EmailConfirmationCode = emailConfirmationCode
+            };
+            
+            var user = await _mediator.Send(confirmEmailQuery);
+            return Ok(user);
+        }
     }
 }

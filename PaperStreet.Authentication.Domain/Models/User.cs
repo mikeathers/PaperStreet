@@ -7,5 +7,6 @@ namespace PaperStreet.Authentication.Domain.Models
         public string RefreshToken { get; set; }
         public string Email { get; set; }
         public string Image { get; set; }
+        public bool EmailConfirmed { get; set; }
     }
 }

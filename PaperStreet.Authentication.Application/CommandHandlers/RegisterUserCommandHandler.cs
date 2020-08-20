@@ -57,7 +57,8 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
                 Token = _jwtGenerator.CreateToken(user),
                 RefreshToken = user.RefreshToken,
                 Email = user.Email,
-                Image = null
+                Image = null,
+                EmailConfirmed = false
             };
 
         }

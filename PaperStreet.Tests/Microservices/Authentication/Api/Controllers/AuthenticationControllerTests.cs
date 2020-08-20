@@ -43,5 +43,19 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
 
             mockMediator.Received().Send(loginQuery);
         }
+        
+        [Fact]
+        public void GivenConfirmEmailPostMethod_WhenReceivesCorrectCommand_ThenMediatorSendMethodShouldFire()
+        {
+            const string userId = "001";
+            const string emailConfirmationCode = "101010";
+
+            var mockMediator = Substitute.For<IMediator>();
+            var authenticationController = new AuthenticationController(mockMediator);
+
+            authenticationController.ConfirmEmail(userId, emailConfirmationCode);
+
+            mockMediator.Received().Send(Arg.Any<ConfirmEmail.Command>());
+        }
     }
 }
