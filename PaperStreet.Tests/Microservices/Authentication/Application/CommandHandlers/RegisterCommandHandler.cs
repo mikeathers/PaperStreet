@@ -29,7 +29,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             await using var context = new AuthenticationDbContext(options);
             {
                 await context.Database.EnsureCreatedAsync();
-                context.SeedUserData();
+                context.SeedSingleUserData();;
 
                 var registerCommand = new PaperStreet.Authentication.Application.Commands.RegisterUser.Command
                 {
@@ -57,7 +57,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             await using var context = new AuthenticationDbContext(options);
             {
                 await context.Database.EnsureCreatedAsync();
-                context.SeedUserData();
+                context.SeedSingleUserData();
 
                 var registerCommand = new PaperStreet.Authentication.Application.Commands.RegisterUser.Command
                 {
@@ -85,7 +85,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             await using var context = new AuthenticationDbContext(options);
             {
                 await context.Database.EnsureCreatedAsync();
-                context.SeedUserData();
+                context.SeedSingleUserData();
 
                 var registerCommand = new PaperStreet.Authentication.Application.Commands.RegisterUser.Command
                 {
@@ -118,7 +118,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             await using var context = new AuthenticationDbContext(options);
             {
                 await context.Database.EnsureCreatedAsync();
-                context.SeedUserData();
+                context.SeedSingleUserData();
 
                 var registerCommand = new PaperStreet.Authentication.Application.Commands.RegisterUser.Command
                 {

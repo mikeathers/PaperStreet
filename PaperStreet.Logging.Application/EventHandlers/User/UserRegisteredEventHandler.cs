@@ -2,21 +2,21 @@ using System;
 using System.Threading.Tasks;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.User;
-using PaperStreet.Logging.Data.Context;
+using PaperStreet.Logging.Application.Interfaces;
 using PaperStreet.Logging.Domain.Models;
 
 namespace PaperStreet.Logging.Application.EventHandlers.User
 {
     public class UserRegisteredEventHandler : IEventHandler<UserRegisteredEvent>
     {
-        private readonly LoggingDbContext _context;
+        private readonly ILoggingRepository _loggingRepository;
 
-        public UserRegisteredEventHandler(LoggingDbContext context)
+        public UserRegisteredEventHandler(ILoggingRepository loggingRepository)
         {
-            _context = context;
+            _loggingRepository = loggingRepository;
         }
 
-        public Task Handle(UserRegisteredEvent @event)
+        public async Task Handle(UserRegisteredEvent @event)
         {
             var authenticationLog = new AuthenticationLog
             {
@@ -26,14 +26,8 @@ namespace PaperStreet.Logging.Application.EventHandlers.User
                 Timestamp = @event.Timestamp,
                 Email = @event.Email
             };
-            
-            _context.AuthenticationLogs.Add(authenticationLog);
-            var success = _context.SaveChanges() > 0;
-            
-            if (success)
-                return Task.CompletedTask;
-            
-            throw new Exception("Problem saving the Log");
+
+            await _loggingRepository.SaveAuthenticationLog(authenticationLog);
         }
     }
 }

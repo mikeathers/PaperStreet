@@ -16,4 +16,8 @@
       <ProjectReference Include="..\PaperStreet.Authentication.Domain\PaperStreet.Authentication.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Repository" />
+    </ItemGroup>
+
 </Project>

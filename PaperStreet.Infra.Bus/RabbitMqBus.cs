@@ -103,9 +103,9 @@ namespace PaperStreet.Infra.Bus
             {
                 await ProcessEvent(eventName, message);
             }
-            catch (Exception ex)
+            catch
             {
-                
+                throw new Exception($"Problem consuming event {eventName}");
             }
         }
 
@@ -125,7 +125,7 @@ namespace PaperStreet.Infra.Bus
                     // Create concrete EventHandler for EventType
                     var concreteType = typeof(IEventHandler<>).MakeGenericType(eventType);
                     
-                    // Fire Handler method for EventHandler
+                    // Fire Handle method for EventHandler
                     await (Task) concreteType.GetMethod("Handle").Invoke(handler, new object[] {@event});
                 }
             }

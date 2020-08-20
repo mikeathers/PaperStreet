@@ -11,8 +11,28 @@ namespace PaperStreet.Tests.Microservices.Authentication.SeedData
             context.Users.AddRange(Users());
             context.SaveChangesAsync();
         }
+        
+        public static void SeedSingleUserData(this AuthenticationDbContext context)
+        {
+            context.Users.AddRange(SingleUser());
+            context.SaveChangesAsync();
+        }
 
         private static IEnumerable<AppUser> Users()
+        {
+            return new List<AppUser>
+            {
+                new AppUser()
+                {
+                    DisplayName = "Test User",
+                    UserName = "test@gmail.com",
+                    Email = "test@gmail.com",
+                }
+            };
+
+        }
+        
+        private static IEnumerable<AppUser> SingleUser()
         {
             return new List<AppUser>
             {

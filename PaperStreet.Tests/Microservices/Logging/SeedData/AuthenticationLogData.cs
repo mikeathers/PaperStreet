@@ -12,8 +12,27 @@ namespace PaperStreet.Tests.Microservices.Logging.SeedData
             context.AuthenticationLogs.AddRange(AuthenticationLogs());
             context.SaveChanges();
         }
+        
+        public static void SeedSingleAuthenticationLog(this LoggingDbContext context)
+        {
+            context.AuthenticationLogs.AddRange(SingleAuthenticationLog());
+            context.SaveChanges();
+        }
 
         private static IEnumerable<AuthenticationLog> AuthenticationLogs()
+        {
+            return new List<AuthenticationLog>
+            {
+                new AuthenticationLog
+                {
+                    DisplayName = "User Registered",
+                    Email = "test@gmail.com",
+                    UserId = "12122-d3e3"
+                }
+            };
+        }
+        
+        private static IEnumerable<AuthenticationLog> SingleAuthenticationLog()
         {
             return new List<AuthenticationLog>
             {

@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\PaperStreet.Logging.Application\PaperStreet.Logging.Application.csproj" />
       <ProjectReference Include="..\PaperStreet.Logging.Domain\PaperStreet.Logging.Domain.csproj" />
     </ItemGroup>
 

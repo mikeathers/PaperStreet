@@ -16,12 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Domain" />
-      <Folder Include="Infra.Bus" />
-      <Folder Include="Infra.IoC" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\PaperStreet.Authentication.Api\PaperStreet.Authentication.Api.csproj" />
       <ProjectReference Include="..\PaperStreet.Authentication.Domain\PaperStreet.Authentication.Domain.csproj" />
       <ProjectReference Include="..\PaperStreet.Logging.Api\PaperStreet.Logging.Api.csproj" />

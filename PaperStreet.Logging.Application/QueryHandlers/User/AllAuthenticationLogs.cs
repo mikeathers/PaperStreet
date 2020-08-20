@@ -2,24 +2,25 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using PaperStreet.Logging.Data.Context;
+using PaperStreet.Logging.Application.Interfaces;
 using PaperStreet.Logging.Domain.Models;
 
 namespace PaperStreet.Logging.Application.QueryHandlers.User
 {
     public class AllAuthenticationLogs : IRequestHandler<Queries.User.AllAuthenticationLogs.Query, List<AuthenticationLog>>
     {
-        private readonly LoggingDbContext _context;
+        private readonly ILoggingRepository _loggingRepository;
 
-        public AllAuthenticationLogs(LoggingDbContext context)
+        public AllAuthenticationLogs(ILoggingRepository loggingRepository)
         {
-            _context = context;
+            _loggingRepository = loggingRepository;
         }
 
-        public async Task<List<AuthenticationLog>> Handle(Queries.User.AllAuthenticationLogs.Query request, CancellationToken cancellationToken)
+
+        public async Task<List<AuthenticationLog>> Handle(Queries.User.AllAuthenticationLogs.Query request, 
+            CancellationToken cancellationToken)
         {
-            return await _context.AuthenticationLogs.ToListAsync(cancellationToken: cancellationToken);
+            return await _loggingRepository.GetAllAuthenticationLogs();
         }
     }
 }
