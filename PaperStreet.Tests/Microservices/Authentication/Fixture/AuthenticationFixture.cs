@@ -14,8 +14,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.Fixture
         public UserManager<AppUser> UserManager { get; private set; }
         public IJwtGenerator JwtGenerator { get; private set; }
         public IEventBus EventBus { get; private set; }
-
         public IEmailBuilder EmailBuilder { get; private set; }
+        public IUserConfirmationEmail UserConfirmationEmail { get; private set; }
         
         public AuthenticationFixture()
         {
@@ -45,6 +45,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Fixture
 
             var emailBuilder = Substitute.For<IEmailBuilder>();
             EmailBuilder = emailBuilder;
+
+            var userConfirmationEmail = Substitute.For<IUserConfirmationEmail>();
+            UserConfirmationEmail = userConfirmationEmail;
 
         }
     }

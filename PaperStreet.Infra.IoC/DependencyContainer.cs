@@ -37,6 +37,7 @@ namespace PaperStreet.Infra.IoC
             services.AddTransient<IJwtGenerator, JwtGenerator>();
             services.AddTransient<IEmailBuilder, EmailBuilder>();
             services.AddTransient<ISendGridClient, SendGridClient>();
+            services.AddTransient<IEmailSender, EmailSender>();
 
             // Data
             services.AddTransient<ILoggingRepository, LoggingRepository>();

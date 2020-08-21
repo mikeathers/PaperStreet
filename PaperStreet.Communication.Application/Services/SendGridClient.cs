@@ -29,8 +29,8 @@ namespace PaperStreet.Communication.Application.Services
                 fromAddress,
                 toAddress,
                 emailToSend.Subject,
-                emailToSend.PlainTextContent,
-                emailToSend.HtmlContent);
+                emailToSend.HtmlContent,
+                emailToSend.PlainTextContent);
             
             var response = await client.SendEmailAsync(message);
             
@@ -57,10 +57,10 @@ namespace PaperStreet.Communication.Application.Services
 
         private EmailAddress CreateFromAddress()
         {
-            return new EmailAddress(_sendGridSettings.FromEmailAddress, _sendGridSettings.FromSendersName);
+            return new EmailAddress(_sendGridSettings.FromSenderAddress, _sendGridSettings.FromSenderName);
         }
 
-        private EmailAddress CreateToAddress(string address, string name)
+        private static EmailAddress CreateToAddress(string address, string name)
         {
             return new EmailAddress(address, name);
         }

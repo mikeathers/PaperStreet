@@ -1,9 +1,15 @@
 namespace PaperStreet.Domain.Core.Events.User
 {
-    public class UserEvent : Event
+    public abstract class UserEvent : Event
     {
-        public string UserId { get; set; }
-        public string Email { get; set; }
-        public string EventDisplayName { get; set; }
+        protected UserEvent(string userId, string email)
+        {
+            UserId = userId;
+            Email = email;
+        }
+
+        public string UserId { get; }
+        public string Email { get; }
+        public abstract string EventDisplayName { get; }
     }
 }

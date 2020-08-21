@@ -24,17 +24,18 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         private readonly IJwtGenerator _mockJwtGenerator;
         private readonly IEventBus _mockEventBus;
         private readonly IEmailBuilder _mockEmailBuilder;
+        private readonly IUserConfirmationEmail _mockUserConfirmationEmail;
         private readonly RegisterUser.Command _command;
         private readonly AppUser _user;
             
         public RegisterUserCommandHandlerTests(AuthenticationFixture fixture)
         {
-            var localFixture = fixture;
-            _mockUserManager = localFixture.UserManager;
-            _mockJwtGenerator = localFixture.JwtGenerator;
-            _mockEventBus = localFixture.EventBus;
-            _mockEmailBuilder = localFixture.EmailBuilder;
-            _user = localFixture.TestUser;
+            _mockUserConfirmationEmail = fixture.UserConfirmationEmail;
+            _mockUserManager = fixture.UserManager;
+            _mockJwtGenerator = fixture.JwtGenerator;
+            _mockEventBus = fixture.EventBus;
+            _mockEmailBuilder = fixture.EmailBuilder;
+            _user = fixture.TestUser;
             
             _command = new RegisterUser.Command
             {
@@ -61,7 +62,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 };
 
                 var registerCommandHandler =
-                    new RegisterUserCommandHandler(context, _mockUserManager, _mockJwtGenerator, _mockEventBus, _mockEmailBuilder);
+                    new RegisterUserCommandHandler(context, _mockUserManager, _mockJwtGenerator, _mockEventBus, _mockUserConfirmationEmail);
 
                 await Assert.ThrowsAsync<RestException>(() =>
                     registerCommandHandler.Handle(invalidCommand, CancellationToken.None));
@@ -81,7 +82,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                     .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
 
                 var registerCommandHandler = 
-                    new RegisterUserCommandHandler(context, _mockUserManager, _mockJwtGenerator, _mockEventBus, _mockEmailBuilder);
+                    new RegisterUserCommandHandler(context, _mockUserManager, _mockJwtGenerator, _mockEventBus, _mockUserConfirmationEmail);
                 
                 var registeredUser = await registerCommandHandler.Handle(_command, CancellationToken.None);
                 
@@ -103,7 +104,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                     .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
 
                 var registerCommandHandler = 
-                    new RegisterUserCommandHandler(context, _mockUserManager, _mockJwtGenerator, _mockEventBus, _mockEmailBuilder);
+                    new RegisterUserCommandHandler(context, _mockUserManager, _mockJwtGenerator, _mockEventBus, _mockUserConfirmationEmail);
                 
                 await registerCommandHandler.Handle(_command, CancellationToken.None);
                 
@@ -112,28 +113,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         }
         
         [Fact]
-        public async Task GivenRegisterUserCommandHandler_WhenNewUserHasRegistered_ThenEmailBuilderServiceShouldBeCalled()
-        {
-            var options = SqliteInMemory.CreateOptions<AuthenticationDbContext>();
-            await using var context = new AuthenticationDbContext(options);
-            {
-                await context.Database.EnsureCreatedAsync();
-                context.SeedSingleUserData();
-
-                _mockUserManager.CreateAsync(_user, _command.Password)
-                    .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
-
-                var registerCommandHandler = 
-                    new RegisterUserCommandHandler(context, _mockUserManager, _mockJwtGenerator, _mockEventBus, _mockEmailBuilder);
-                
-                await registerCommandHandler.Handle(_command, CancellationToken.None);
-                
-                _mockEventBus.Received().Publish(Arg.Any<UserRegisteredEvent>());
-            }
-        }
-        
-        [Fact]
-        public async Task GivenRegisterUserCommandHandler_WhenNewUserHasRegistered_ThenEmailConfirmationTokenShouldBeCreated()
+        public async Task GivenRegisterUserCommandHandler_WhenNewUserHasRegistered_ThenUserConfirmationEmailShouldBeCalled()
         {
             var options = SqliteInMemory.CreateOptions<AuthenticationDbContext>();
             await using var context = new AuthenticationDbContext(options);
@@ -144,12 +124,13 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 _mockUserManager.CreateAsync(_user, _command.Password)
                     .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
 
-                var registerCommandHandler = 
-                    new RegisterUserCommandHandler(context, _mockUserManager, _mockJwtGenerator, _mockEventBus, _mockEmailBuilder);
-                
+                var registerCommandHandler =
+                    new RegisterUserCommandHandler(context, _mockUserManager, _mockJwtGenerator, _mockEventBus,
+                        _mockUserConfirmationEmail);
+
                 await registerCommandHandler.Handle(_command, CancellationToken.None);
-                
-                await _mockUserManager.Received().GenerateEmailConfirmationTokenAsync(Arg.Any<AppUser>());
+
+                await _mockUserConfirmationEmail.Received().Send(Arg.Any<AppUser>());
             }
         }
     }

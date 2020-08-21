@@ -31,5 +31,7 @@
     &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Authentication.Application.CommandHandlers.RegisterUserCommandHandlerTests&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Communication.Application.Services.EmailSenderTests.GivenEmailSender_WhenCorrectEmailInfoReceived_ThenShouldCallSendGridClient&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Communication.Application.Services.EmailSenderTests.GivenEmailSender_WhenEmailFailsToSend_ThenShouldPublishEmailFailedToSendEvent&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Communication.Api.Controllers.CommunicationControllerTests.GivenSendEmailPostMethod_WhenReceivesCorrectEmailData_ThenShouldCallEmailSenderService&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::2C480AE9-7C43-47C9-95CC-593070EA8A66::.NETCoreApp,Version=v3.1::PaperStreet.Tests.Microservices.Communication.Application.Services.EmailSenderTests.GivenEmailSender_WhenMissingEmailData_ThenShouldReturnBadRequest&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

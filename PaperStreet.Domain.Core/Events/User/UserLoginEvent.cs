@@ -4,11 +4,10 @@ namespace PaperStreet.Domain.Core.Events.User
 {
     public class UserLoginEvent : UserEvent
     {
-        public UserLoginEvent(string userId, string email)
+        public UserLoginEvent(string userId, string email) : base(userId, email)
         {
-            UserId = userId;
-            Email = email;
             EventDisplayName = EventDisplayNames.UserLoginEvent;
         }
+        public override string EventDisplayName { get; }
     }
 }

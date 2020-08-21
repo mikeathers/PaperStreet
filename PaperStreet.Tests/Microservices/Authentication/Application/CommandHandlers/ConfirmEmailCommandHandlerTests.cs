@@ -28,11 +28,10 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
 
         public ConfirmEmailCommandHandlerTests(AuthenticationFixture fixture)
         {
-            var localFixture = fixture;
-            _mockUserManager = localFixture.UserManager;
-            _mockJwtGenerator = localFixture.JwtGenerator;
-            _mockEventBus = localFixture.EventBus;
-            _user = localFixture.TestUser;
+            _mockUserManager = fixture.UserManager;
+            _mockJwtGenerator = fixture.JwtGenerator;
+            _mockEventBus = fixture.EventBus;
+            _user = fixture.TestUser;
             _user.EmailConfirmed = true;
             
             _command = new ConfirmEmail.Command

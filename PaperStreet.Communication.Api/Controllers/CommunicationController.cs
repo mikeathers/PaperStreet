@@ -1,4 +1,7 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using PaperStreet.Communication.Application.Interfaces;
+using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Communication.Api.Controllers
 {
@@ -6,9 +9,11 @@ namespace PaperStreet.Communication.Api.Controllers
     [ApiController]
     public class CommunicationController : ControllerBase
     {
-        // GET
-        public IActionResult Get()
+       
+        [HttpPost]
+        public async Task<IActionResult> SendEmail(Email emailToSend, [FromServices] IEmailSender sender)
         {
+            await sender.SendEmail(emailToSend);
             return Ok();
         }
     }

@@ -1,6 +1,9 @@
+using System.Data;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation;
 using PaperStreet.Communication.Application.Interfaces;
+using PaperStreet.Communication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.Errors;
 using PaperStreet.Domain.Core.KeyValuePairs;
@@ -22,11 +25,23 @@ namespace PaperStreet.Communication.Application.Services
         public async Task SendEmail(Email emailToSend)
         {
             var emailSentStatusCode = await _sendGridClient.SendEmailAsync(emailToSend);
-            if (emailSentStatusCode != HttpStatusCode.OK
-                || emailSentStatusCode != HttpStatusCode.Accepted)
+            if (emailSentStatusCode != HttpStatusCode.Accepted)
             {
                 _eventBus.Publish(new EmailFailedToSendEvent(emailToSend.UserId, ErrorMessages.EmailFailedToSend));
             }
+        }
+    }
+
+    public class EmailSenderValidator : AbstractValidator<Email>
+    {
+        public EmailSenderValidator()
+        {
+            RuleFor(x => x.FirstName).NotEmpty();
+            RuleFor(x => x.To).NotEmpty();
+            RuleFor(x => x.Subject).NotEmpty();
+            RuleFor(x => x.UserId).NotEmpty();
+            RuleFor(x => x.HtmlContent).NotEmpty();
+            RuleFor(x => x.PlainTextContent).NotEmpty();
         }
     }
 }

@@ -21,16 +21,16 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IEventBus _eventBus;
-        private readonly IEmailBuilder _emailBuilder;
+        private readonly IUserConfirmationEmail _userConfirmationEmail;
 
         public RegisterUserCommandHandler(AuthenticationDbContext context, UserManager<AppUser> userManager,
-            IJwtGenerator jwtGenerator, IEventBus eventBus, IEmailBuilder emailBuilder)
+            IJwtGenerator jwtGenerator, IEventBus eventBus, IUserConfirmationEmail userConfirmationEmail)
         {
             _context = context;
             _userManager = userManager;
             _jwtGenerator = jwtGenerator;
             _eventBus = eventBus;
-            _emailBuilder = emailBuilder;
+            _userConfirmationEmail = userConfirmationEmail;
         }
 
         public async Task<User> Handle(Commands.RegisterUser.Command request, CancellationToken cancellationToken)
@@ -52,10 +52,9 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 
             if (!result.Succeeded) throw new Exception("Problem creating user");
             
-            var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationEmail = _emailBuilder.ConfirmationEmail(user.FirstName, user.Id, confirmEmailToken);
-            
             _eventBus.Publish(new UserRegisteredEvent(user.Id, user.Email));
+
+            await _userConfirmationEmail.Send(user);
 
             return new User
             {

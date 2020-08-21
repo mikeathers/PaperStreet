@@ -4,10 +4,10 @@ namespace PaperStreet.Domain.Core.Events.User
 {
     public class EmailConfirmedEvent : UserEvent
     {
-        public EmailConfirmedEvent(string userId, string email)
+        public override string EventDisplayName { get; }
+
+        public EmailConfirmedEvent(string userId, string email) : base(userId, email)
         {
-            UserId = userId;
-            Email = email;
             EventDisplayName = EventDisplayNames.EmailConfirmedEvent;
         }
     }
