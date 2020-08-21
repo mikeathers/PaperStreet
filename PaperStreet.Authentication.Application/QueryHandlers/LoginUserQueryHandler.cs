@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
-using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.QueryHandlers
@@ -41,7 +41,7 @@ namespace PaperStreet.Authentication.Application.QueryHandlers
             
             await _userManager.UpdateAsync(user);
             
-            _eventBus.Publish(new UserLoginEvent(user.Id, user.Email));
+            _eventBus.Publish(new AuthenticationLogEvent(user.Id, new UserLoginEvent()));
 
             return new User
             {

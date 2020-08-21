@@ -12,12 +12,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PaperStreet.Domain.Core.Bus;
-using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Infra.IoC;
 using PaperStreet.Logging.Api.Middleware;
 using PaperStreet.Logging.Application.EventHandlers.User;
+using PaperStreet.Logging.Application.Interfaces;
 using PaperStreet.Logging.Application.Queries.User;
 using PaperStreet.Logging.Data.Context;
+using PaperStreet.Logging.Data.Repository;
 
 namespace PaperStreet.Logging.Api
 {
@@ -47,11 +49,11 @@ namespace PaperStreet.Logging.Api
                 });
             });
             
-            AddJwtAuthentication(services, Configuration);
-            RegisterIoCServices(services);
-            
             services.AddMediatR(typeof(AllAuthenticationLogs.Query).Assembly);
-            
+
+            RegisterIoCServices(services);
+            AddJwtAuthentication(services, Configuration);
+
             services.AddControllers().AddFluentValidation(cfg => 
             {
                 cfg.RegisterValidatorsFromAssemblyContaining<AllAuthenticationLogs.Query>();
@@ -78,7 +80,18 @@ namespace PaperStreet.Logging.Api
 
         private void RegisterIoCServices(IServiceCollection services)
         {
-            DependencyContainer.RegisterServices(services);
+            RegisterEventBus.RegisterServices(services);
+            
+            // Subscriptions
+            services.AddTransient<AuthenticationLogEventHandler>();
+            
+            // Domain Events
+            services.AddTransient<IEventHandler<AuthenticationLogEvent>, AuthenticationLogEventHandler>();
+            
+            // Data
+            services.AddTransient<ILoggingRepository, LoggingRepository>();
+            services.AddTransient<LoggingDbContext>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -111,7 +124,7 @@ namespace PaperStreet.Logging.Api
         private static void ConfigureEventBus(IApplicationBuilder app)
         {
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            eventBus.Subscribe<UserRegisteredEvent, UserRegisteredEventHandler>();
+            eventBus.Subscribe<AuthenticationLogEvent, AuthenticationLogEventHandler>();
         }
     }
 }

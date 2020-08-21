@@ -17,8 +17,8 @@ namespace PaperStreet.Logging.Data.Migrations
                     Timestamp = table.Column<DateTime>(nullable: false),
                     MessageType = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: true),
-                    DisplayName = table.Column<string>(nullable: true)
+                    LogType = table.Column<string>(nullable: true),
+                    LogMessage = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

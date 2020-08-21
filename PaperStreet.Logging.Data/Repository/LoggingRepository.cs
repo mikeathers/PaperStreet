@@ -19,7 +19,8 @@ namespace PaperStreet.Logging.Data.Repository
 
         public async Task<List<AuthenticationLog>> GetAllAuthenticationLogs()
         {
-            return await _context.AuthenticationLogs.ToListAsync();
+            var logs = await _context.AuthenticationLogs.ToListAsync();
+            return logs;
         }
 
         public async Task<AuthenticationLog> SaveAuthenticationLog(AuthenticationLog authenticationLog)

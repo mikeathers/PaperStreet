@@ -18,6 +18,8 @@
       <ProjectReference Include="..\PaperStreet.Infra.IoC\PaperStreet.Infra.IoC.csproj" />
       <ProjectReference Include="..\PaperStreet.Logging.Application\PaperStreet.Logging.Application.csproj" />
       <ProjectReference Include="..\PaperStreet.Logging.Data\PaperStreet.Logging.Data.csproj" />
+      <ProjectReference Include="..\PaperStreet.Logging.Domain\PaperStreet.Logging.Domain.csproj" />
+      
     </ItemGroup>
 
     <ItemGroup>

@@ -8,7 +8,7 @@ using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
-using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.CommandHandlers
@@ -42,7 +42,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             
             await _userManager.UpdateAsync(user);
             
-            _eventBus.Publish(new EmailConfirmedEvent(user.Id, user.Email));
+            _eventBus.Publish(new AuthenticationLogEvent(user.Id, new EmailConfirmedEvent()));
 
             return new User
             {

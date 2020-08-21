@@ -25,8 +25,6 @@ namespace PaperStreet.Tests.Microservices.Logging.SeedData
             {
                 new AuthenticationLog
                 {
-                    DisplayName = "User Registered",
-                    Email = "test@gmail.com",
                     UserId = "12122-d3e3"
                 }
             };
@@ -38,8 +36,6 @@ namespace PaperStreet.Tests.Microservices.Logging.SeedData
             {
                 new AuthenticationLog
                 {
-                    DisplayName = "User Registered",
-                    Email = "test@gmail.com",
                     UserId = "12122-d3e3"
                 }
             };

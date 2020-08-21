@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\PaperStreet.Communication.Application\PaperStreet.Communication.Application.csproj" />
       <ProjectReference Include="..\PaperStreet.Infra.IoC\PaperStreet.Infra.IoC.csproj" />
     </ItemGroup>
 

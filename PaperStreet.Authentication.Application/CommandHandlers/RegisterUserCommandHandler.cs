@@ -1,21 +1,21 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
-using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.CommandHandlers
 {
-    public class RegisterUserCommandHandler : IRequestHandler<Commands.RegisterUser.Command, User>
+    public class RegisterUserCommandHandler : IRequestHandler<RegisterUser.Command, User>
     {
         private readonly AuthenticationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
@@ -33,9 +33,9 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             _userConfirmationEmail = userConfirmationEmail;
         }
 
-        public async Task<User> Handle(Commands.RegisterUser.Command request, CancellationToken cancellationToken)
+        public async Task<User> Handle(RegisterUser.Command request, CancellationToken cancellationToken)
         {
-            if (await _context.Users.Where(x => x.Email == request.Email).AnyAsync(cancellationToken: cancellationToken))
+            if (await _context.Users.AnyAsync(x => x.Email == request.Email, cancellationToken: cancellationToken))
                 throw new RestException(HttpStatusCode.BadRequest, new {Email = "Email already exists"});
 
             var user = new AppUser
@@ -52,7 +52,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 
             if (!result.Succeeded) throw new Exception("Problem creating user");
             
-            _eventBus.Publish(new UserRegisteredEvent(user.Id, user.Email));
+            _eventBus.Publish(new AuthenticationLogEvent(user.Id, new UserRegisteredEvent()));
 
             await _userConfirmationEmail.Send(user);
 

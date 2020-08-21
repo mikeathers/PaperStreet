@@ -105,7 +105,7 @@ namespace PaperStreet.Infra.Bus
             }
             catch
             {
-                throw new Exception($"Problem consuming event {eventName}");
+                throw new Exception($"Problem consuming logEvent {eventName}");
             }
         }
 
@@ -122,7 +122,7 @@ namespace PaperStreet.Infra.Bus
                     var eventType = _eventTypes.SingleOrDefault(t => t.Name == eventName);
                     var @event = JsonConvert.DeserializeObject(message, eventType!);
                         
-                    // Create concrete EventHandler for EventType
+                    // Create concrete EventHandler for LogType
                     var concreteType = typeof(IEventHandler<>).MakeGenericType(eventType);
                     
                     // Fire Handle method for EventHandler

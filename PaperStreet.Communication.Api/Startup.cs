@@ -9,7 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PaperStreet.Communication.Application.EventHandlers;
+using PaperStreet.Communication.Application.Interfaces;
 using PaperStreet.Communication.Application.Services;
+using PaperStreet.Domain.Core.Bus;
+using PaperStreet.Domain.Core.Events.User.Communication;
 using PaperStreet.Infra.IoC;
 
 namespace PaperStreet.Communication.Api
@@ -46,7 +50,17 @@ namespace PaperStreet.Communication.Api
 
         private static void RegisterIoCServices(IServiceCollection services)
         {
-            DependencyContainer.RegisterServices(services);
+            RegisterEventBus.RegisterServices(services);
+            
+            // Subscriptions
+            services.AddTransient<SendEmailEventHandler>();
+            
+            // Domain Events
+            services.AddTransient<IEventHandler<SendEmailEvent>, SendEmailEventHandler>();
+            
+            // Application Services
+            services.AddTransient<ISendGridClient, SendGridClient>();
+            services.AddTransient<IEmailSender, EmailSender>();
         }
         
         private static void AddJwtAuthentication(IServiceCollection services, IConfiguration config)
@@ -88,6 +102,14 @@ namespace PaperStreet.Communication.Api
             });
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            
+            ConfigureEventBus(app);
+        }
+
+        private static void ConfigureEventBus(IApplicationBuilder app)
+        {
+            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<SendEmailEvent, SendEmailEventHandler>();
         }
     }
 }

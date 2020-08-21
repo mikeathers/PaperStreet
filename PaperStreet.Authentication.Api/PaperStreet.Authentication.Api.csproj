@@ -15,7 +15,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\PaperStreet.Authentication.Application\PaperStreet.Authentication.Application.csproj" />
       <ProjectReference Include="..\PaperStreet.Authentication.Data\PaperStreet.Authentication.Data.csproj" />
+      <ProjectReference Include="..\PaperStreet.Authentication.Infra\PaperStreet.Authentication.Infra.csproj" />
       <ProjectReference Include="..\PaperStreet.Infra.IoC\PaperStreet.Infra.IoC.csproj" />
     </ItemGroup>
 
@@ -25,7 +27,6 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </Content>
-      <Content Remove="appsettings.Development.json" />
     </ItemGroup>
 
 

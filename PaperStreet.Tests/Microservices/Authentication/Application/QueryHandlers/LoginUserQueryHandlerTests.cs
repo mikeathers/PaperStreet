@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Application.Queries;
 using PaperStreet.Authentication.Application.QueryHandlers;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
-using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Domain.Core.Models;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
 using Xunit;
@@ -63,7 +62,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         }
         
         [Fact]
-        public async Task GivenLoginUserQueryHandler_WhenUserAuthenticated_ThenShouldPublishUserLoginEvent()
+        public async Task GivenLoginUserQueryHandler_WhenUserAuthenticated_ThenShouldPublishAuthenticationLogEvent()
         {
             _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
             _mockUserManager.CheckPasswordAsync(_user, _query.Password).ReturnsForAnyArgs(true);
@@ -72,7 +71,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
 
             await loginUserQueryHandler.Handle(_query, CancellationToken.None);
             
-            _mockEventBus.Received().Publish(Arg.Any<UserLoginEvent>());
+            _mockEventBus.Received().Publish(Arg.Any<AuthenticationLogEvent>());
         }
     }
 }

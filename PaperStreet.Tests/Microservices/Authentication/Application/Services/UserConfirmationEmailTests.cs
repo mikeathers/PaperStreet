@@ -4,7 +4,8 @@ using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Application.Services;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
-using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Events.User.Communication;
+using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
 using Xunit;
 
@@ -44,12 +45,21 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.Services
         }
         
         [Fact]
-        public void GivenUserConfirmationEmail_WhenReceivesCorrectData_ThenShouldPublishSendConfirmationEmailEvent()
+        public void GivenUserConfirmationEmail_WhenReceivesCorrectData_ThenShouldPublishAuthenticationLogEvent()
         {
             var userConfirmationEmail = new UserConfirmationEmail(_mockUserManager, _mockEmailBuilder, _mockEventBus);
             userConfirmationEmail.Send(_user);
             
-            _mockEventBus.Received().Publish(Arg.Any<SendConfirmationEmailEvent>());
+            _mockEventBus.Received().Publish(Arg.Any<AuthenticationLogEvent>());
+        }
+        
+        [Fact]
+        public void GivenUserConfirmationEmail_WhenReceivesCorrectData_ThenShouldPublishSendEmailEvent()
+        {
+            var userConfirmationEmail = new UserConfirmationEmail(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+            userConfirmationEmail.Send(_user);
+            
+            _mockEventBus.Received().Publish(Arg.Any<SendEmailEvent>());
         }
     }
 }

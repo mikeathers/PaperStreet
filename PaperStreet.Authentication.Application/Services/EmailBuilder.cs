@@ -14,7 +14,7 @@ namespace PaperStreet.Authentication.Application.Services
         
         public string ConfirmationEmail(string firstName, string userId, string emailConfirmationCode)
         {
-            var webSiteUrl = _configuration.GetSection("WebSiteUrl").Path;
+            var webSiteUrl = _configuration.GetValue<string>("WebSiteUrl");
             
             var emailUrl = $"http://{webSiteUrl}/api/authentication/confirm-email/{userId}/{emailConfirmationCode}";
             

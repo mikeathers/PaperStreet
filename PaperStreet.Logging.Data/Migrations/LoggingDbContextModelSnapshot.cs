@@ -14,7 +14,7 @@ namespace PaperStreet.Logging.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("PaperStreet.Logging.Domain.Models.AuthenticationLog", b =>
@@ -23,10 +23,10 @@ namespace PaperStreet.Logging.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("EventDisplayName")
+                    b.Property<string>("LogMessage")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("LogType")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("MessageType")

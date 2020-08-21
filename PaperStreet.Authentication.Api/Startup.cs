@@ -14,8 +14,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PaperStreet.Authentication.Api.Middleware;
 using PaperStreet.Authentication.Application.Commands;
+using PaperStreet.Authentication.Application.Interfaces;
+using PaperStreet.Authentication.Application.Services;
 using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Authentication.Domain.Models;
+using PaperStreet.Authentication.Infra.Security;
 using PaperStreet.Infra.IoC;
 
 namespace PaperStreet.Authentication.Api
@@ -32,11 +35,6 @@ namespace PaperStreet.Authentication.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<AuthenticationDbContext>(options =>
-            {
-                options.UseMySql(Configuration.GetConnectionString("AuthenticationDbConnection"));
-            });
-            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -45,13 +43,18 @@ namespace PaperStreet.Authentication.Api
                     Version = "v1"
                 });
             });
-
-            AddIdentity(services);
-            AddJwtAuthentication(services, Configuration);
-            RegisterIoCServices(services);
+            
+            services.AddDbContext<AuthenticationDbContext>(options =>
+            {
+                options.UseMySql(Configuration.GetConnectionString("AuthenticationDbConnection"));
+            });
             
             services.AddMediatR(typeof(RegisterUser.Command).Assembly);
-            
+
+            RegisterIoCServices(services);
+            AddIdentity(services);
+            AddJwtAuthentication(services, Configuration);
+
             services.AddControllers().AddFluentValidation(cfg => 
             {
                 cfg.RegisterValidatorsFromAssemblyContaining<RegisterUser.Command>();
@@ -82,11 +85,24 @@ namespace PaperStreet.Authentication.Api
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<AuthenticationDbContext>();
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
+            identityBuilder.AddDefaultTokenProviders();
+            
+            // Confirmation token timespan (confirm email, password reset)
+            services.Configure<DataProtectionTokenProviderOptions>(o =>
+                o.TokenLifespan = TimeSpan.FromHours(3));
         }
 
         private static void RegisterIoCServices(IServiceCollection services)
         {
-            DependencyContainer.RegisterServices(services);
+            RegisterEventBus.RegisterServices(services);
+            
+            // Application Services
+            services.AddTransient<IJwtGenerator, JwtGenerator>();
+            services.AddTransient<IUserConfirmationEmail, UserConfirmationEmail>();
+            services.AddTransient<IEmailBuilder, EmailBuilder>();
+            
+            // Data
+            services.AddTransient<AuthenticationDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

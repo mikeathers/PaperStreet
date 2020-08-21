@@ -8,7 +8,7 @@ using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
-using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Domain.Core.Models;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
 using Xunit;
@@ -69,7 +69,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         }
         
         [Fact]
-        public async Task GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldPublishEmailConfirmedEvent()
+        public async Task GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldPublishAuthenticationLogEvent()
         {
             _mockUserManager.ConfirmEmailAsync(_user, EmailConfirmationToken)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
@@ -80,7 +80,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
 
             await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
             
-            _mockEventBus.Received().Publish(Arg.Any<EmailConfirmedEvent>());
+            _mockEventBus.Received().Publish(Arg.Any<AuthenticationLogEvent>());
         }
     }
 }

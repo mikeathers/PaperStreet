@@ -24,11 +24,9 @@ namespace PaperStreet.Tests.Microservices.Logging.Data.Repository
 
                 var authenticationLog = new AuthenticationLog
                 {
-                    DisplayName = "Test User",
                     UserId = "001",
                     MessageType = "UserRegisteredEvent",
                     Timestamp = DateTime.Now,
-                    Email = "testuser@gmail.com"
                 };
 
                 var authenticationLogCount = context.AuthenticationLogs.Count();

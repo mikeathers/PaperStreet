@@ -8,11 +8,10 @@ using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
-using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Domain.Core.Models;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
 using PaperStreet.Tests.Microservices.Authentication.SeedData;
-using SQLitePCL;
 using TestSupport.EfHelpers;
 using Xunit;
 
@@ -23,7 +22,6 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         private readonly UserManager<AppUser> _mockUserManager;
         private readonly IJwtGenerator _mockJwtGenerator;
         private readonly IEventBus _mockEventBus;
-        private readonly IEmailBuilder _mockEmailBuilder;
         private readonly IUserConfirmationEmail _mockUserConfirmationEmail;
         private readonly RegisterUser.Command _command;
         private readonly AppUser _user;
@@ -34,7 +32,6 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _mockUserManager = fixture.UserManager;
             _mockJwtGenerator = fixture.JwtGenerator;
             _mockEventBus = fixture.EventBus;
-            _mockEmailBuilder = fixture.EmailBuilder;
             _user = fixture.TestUser;
             
             _command = new RegisterUser.Command
@@ -92,7 +89,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         }
         
         [Fact]
-        public async Task GivenRegisterUserCommandHandler_WhenNewUserHasRegistered_ThenUserRegisteredEventShouldBePublished()
+        public async Task GivenRegisterUserCommandHandler_WhenNewUserHasRegistered_ThenShouldPublishAuthenticationLogEvent()
         {
             var options = SqliteInMemory.CreateOptions<AuthenticationDbContext>();
             await using var context = new AuthenticationDbContext(options);
@@ -108,7 +105,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 
                 await registerCommandHandler.Handle(_command, CancellationToken.None);
                 
-                _mockEventBus.Received().Publish(Arg.Any<UserRegisteredEvent>());
+                _mockEventBus.Received().Publish(Arg.Any<AuthenticationLogEvent>());
             }
         }
         

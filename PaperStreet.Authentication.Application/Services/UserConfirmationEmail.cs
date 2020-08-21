@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
-using PaperStreet.Domain.Core.Events.User;
+using PaperStreet.Domain.Core.Events.User.Communication;
+using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.Services
@@ -36,7 +37,8 @@ namespace PaperStreet.Authentication.Application.Services
                 UserId = user.Id
             };
             
-            _eventBus.Publish(new SendConfirmationEmailEvent(user.Id, user.Email, emailToSend));
+            _eventBus.Publish(new SendEmailEvent(emailToSend));
+            _eventBus.Publish(new AuthenticationLogEvent(user.Id, new EmailConfirmationSentEvent()));
         }
     }
 }
