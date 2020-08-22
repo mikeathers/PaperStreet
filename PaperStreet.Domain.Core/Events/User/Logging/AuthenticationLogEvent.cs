@@ -3,14 +3,12 @@ namespace PaperStreet.Domain.Core.Events.User.Logging
     public class AuthenticationLogEvent : Event
     {
         public string UserId { get; }
-        public string LogType { get; }
-        public string LogMessage { get; }
+        public string LogType { get; set; }
+        public string LogMessage { get; set; }
 
-        public AuthenticationLogEvent(string userId, UserLogEvent userLogEvent)
+        public AuthenticationLogEvent(string userId)
         {
             UserId = userId;
-            LogMessage = userLogEvent.LogMessage;
-            LogType = userLogEvent.LogType;
         }
     }
 }

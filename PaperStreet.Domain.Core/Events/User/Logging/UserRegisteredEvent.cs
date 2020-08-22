@@ -2,15 +2,12 @@ using PaperStreet.Domain.Core.KeyValuePairs;
 
 namespace PaperStreet.Domain.Core.Events.User.Logging
 {
-    public class UserRegisteredEvent : UserLogEvent
+    public class UserRegisteredEvent : AuthenticationLogEvent
     {
-        public UserRegisteredEvent()
+        public UserRegisteredEvent(string userId): base(userId)
         {
-            LogMessage = "User registered";
-            LogType = "UserRegistered";
+            LogMessage = LogMessages.UserRegistered;
+            LogType = LogTypes.UserRegistered;
         }
-        
-        public sealed override string LogType { get; set; }
-        public sealed override string LogMessage { get; set; }
     }
 }

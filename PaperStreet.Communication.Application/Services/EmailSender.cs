@@ -27,7 +27,7 @@ namespace PaperStreet.Communication.Application.Services
             var emailSentStatusCode = await _sendGridClient.SendEmailAsync(emailToSend);
             if (emailSentStatusCode != HttpStatusCode.Accepted)
             {
-                _eventBus.Publish(new EmailFailedToSendEvent(emailToSend.UserId, ErrorMessages.EmailFailedToSend));
+                _eventBus.Publish(new EmailFailedToSendEvent(emailToSend.UserId));
             }
         }
     }

@@ -41,7 +41,7 @@ namespace PaperStreet.Authentication.Application.QueryHandlers
             
             await _userManager.UpdateAsync(user);
             
-            _eventBus.Publish(new AuthenticationLogEvent(user.Id, new UserLoginEvent()));
+            _eventBus.Publish(new UserLoginEvent(user.Id));
 
             return new User
             {

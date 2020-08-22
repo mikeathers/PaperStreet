@@ -52,7 +52,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 
             if (!result.Succeeded) throw new Exception("Problem creating user");
             
-            _eventBus.Publish(new AuthenticationLogEvent(user.Id, new UserRegisteredEvent()));
+            _eventBus.Publish(new UserRegisteredEvent(user.Id));
 
             await _userConfirmationEmail.Send(user);
 

@@ -36,10 +36,15 @@ namespace PaperStreet.Infra.Bus
 
         public void Publish<T>(T @event) where T : Event
         {
+            const string baseEventName = "Event";
             var factory = new ConnectionFactory() {HostName = "localhost"};
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
-            var eventName = @event.GetType().Name;
+            var baseEvent = @event.GetType().BaseType.Name;
+
+            var eventName = baseEvent == baseEventName 
+                ? @event.GetType().Name 
+                : @event.GetType().BaseType.Name;
 
             channel.QueueDeclare(eventName, false, false, false, null);
 
@@ -120,7 +125,7 @@ namespace PaperStreet.Infra.Bus
                     var handler = scope.ServiceProvider.GetService(subscription);
                     if (handler == null) continue;
                     var eventType = _eventTypes.SingleOrDefault(t => t.Name == eventName);
-                    var @event = JsonConvert.DeserializeObject(message, eventType!);
+                    var @event = JsonConvert.DeserializeObject(message, eventType);
                         
                     // Create concrete EventHandler for LogType
                     var concreteType = typeof(IEventHandler<>).MakeGenericType(eventType);

@@ -16,7 +16,7 @@ namespace PaperStreet.Tests.Microservices.Logging.Application.EventHandlers.User
             const string userId = "12340-223d234d";
 
             var mockLoggingRepository = Substitute.For<ILoggingRepository>();
-            var authenticationLogEvent = new AuthenticationLogEvent(userId, new UserRegisteredEvent());
+            var authenticationLogEvent =new UserRegisteredEvent(userId);
             var userRegisteredEventHandler = new AuthenticationLogEventHandler(mockLoggingRepository);
             
             await userRegisteredEventHandler.Handle(authenticationLogEvent);

@@ -2,14 +2,12 @@ using PaperStreet.Domain.Core.KeyValuePairs;
 
 namespace PaperStreet.Domain.Core.Events.User.Logging
 {
-    public class EmailConfirmedEvent : UserLogEvent
+    public class EmailConfirmedEvent : AuthenticationLogEvent
     {
-        public EmailConfirmedEvent()
+        public EmailConfirmedEvent(string userId) : base(userId)
         {
-            LogMessage = "User confirmed email";
-            LogType = "EmailConfirmed";
+            LogMessage = LogMessages.EmailConfirmed;
+            LogType = LogTypes.EmailConfirmed;
         }
-        public sealed override string LogType { get; set; }
-        public sealed override string LogMessage { get; set; }
     }
 }

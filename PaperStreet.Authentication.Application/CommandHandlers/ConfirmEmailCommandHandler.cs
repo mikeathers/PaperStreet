@@ -42,7 +42,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             
             await _userManager.UpdateAsync(user);
             
-            _eventBus.Publish(new AuthenticationLogEvent(user.Id, new EmailConfirmedEvent()));
+            _eventBus.Publish(new EmailConfirmedEvent(user.Id));
 
             return new User
             {

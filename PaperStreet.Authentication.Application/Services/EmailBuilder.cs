@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using PaperStreet.Authentication.Application.Interfaces;
@@ -16,7 +17,7 @@ namespace PaperStreet.Authentication.Application.Services
         {
             var webSiteUrl = _configuration.GetValue<string>("WebSiteUrl");
             
-            var emailUrl = $"http://{webSiteUrl}/api/authentication/confirm-email/{userId}/{emailConfirmationCode}";
+            var emailUrl = new Uri($"http://{webSiteUrl}/api/authentication/confirm-email/{userId}/{emailConfirmationCode}", UriKind.Absolute);
             
             var sb = new StringBuilder();
             

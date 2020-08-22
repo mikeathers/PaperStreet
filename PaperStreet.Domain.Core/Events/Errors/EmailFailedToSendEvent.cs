@@ -1,11 +1,12 @@
+using PaperStreet.Domain.Core.KeyValuePairs;
+
 namespace PaperStreet.Domain.Core.Events.Errors
 {
     public class EmailFailedToSendEvent : ErrorEvent
     {
-        public EmailFailedToSendEvent(string userId, string message)
+        public EmailFailedToSendEvent(string userId) :base(userId)
         {
-            UserId = userId;
-            Message = message;
+            Message = ErrorMessages.EmailFailedToSend;
         }
     }
 }

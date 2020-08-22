@@ -38,7 +38,7 @@ namespace PaperStreet.Authentication.Application.Services
             };
             
             _eventBus.Publish(new SendEmailEvent(emailToSend));
-            _eventBus.Publish(new AuthenticationLogEvent(user.Id, new EmailConfirmationSentEvent()));
+            _eventBus.Publish(new EmailConfirmationSentEvent(user.Id));
         }
     }
 }
