@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using PaperStreet.Authentication.Application.Interfaces;
+using PaperStreet.Authentication.Domain.KeyValuePairs;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.User.Communication;
@@ -31,7 +32,7 @@ namespace PaperStreet.Authentication.Application.Services
             {
                 To = user.Email,
                 FirstName = user.FirstName,
-                Subject = "Confirm your email",
+                Subject = EmailSubjects.ConfirmEmail,
                 HtmlContent = confirmationEmailHtml,
                 PlainTextContent = null,
                 UserId = user.Id

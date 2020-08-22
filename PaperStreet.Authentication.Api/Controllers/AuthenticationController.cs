@@ -48,5 +48,13 @@ namespace PaperStreet.Authentication.Api.Controllers
             var user = await _mediator.Send(confirmEmailQuery);
             return Ok(user);
         }
+
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<ActionResult> ForgotPassword(ForgotPassword.Query forgotPasswordQuery)
+        {
+            var resetEmailSent = await _mediator.Send(forgotPasswordQuery);
+            return Ok(resetEmailSent);
+        }
     }
 }

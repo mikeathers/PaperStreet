@@ -27,7 +27,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.Services
         }
         
         [Fact]
-        public void GivenUserConfirmationEmail_WhenReceivesCorrectData_ThenShouldUserManagerToGenerateToken()
+        public void GivenUserConfirmationEmail_WhenReceivesCorrectData_ThenShouldCallUserManagerToGenerateToken()
         {
             var userConfirmationEmail = new UserConfirmationEmail(_mockUserManager, _mockEmailBuilder, _mockEventBus);
             userConfirmationEmail.Send(_user);

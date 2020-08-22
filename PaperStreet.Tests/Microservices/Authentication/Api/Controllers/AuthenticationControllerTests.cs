@@ -57,5 +57,21 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
 
             mockMediator.Received().Send(Arg.Any<ConfirmEmail.Command>());
         }
+        
+        [Fact]
+        public void GivenForgotPasswordPostMethod_WhenReceivesCorrectQuery_ThenMediatorSendMethodShouldFire()
+        {
+            var forgotPasswordQuery = new ForgotPassword.Query
+            {
+                Email = "test@gmail.com",
+            };
+            
+            var mockMediator = Substitute.For<IMediator>();
+            var authenticationController = new AuthenticationController(mockMediator);
+
+            authenticationController.ForgotPassword(forgotPasswordQuery);
+
+            mockMediator.Received().Send(forgotPasswordQuery);
+        }
     }
 }

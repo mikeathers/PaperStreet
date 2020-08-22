@@ -6,5 +6,6 @@ namespace PaperStreet.Domain.Core.KeyValuePairs
         public static string EmailConfirmed => "User confirmed email";
         public static string UserLoggedIn => "User logged in";
         public static string UserRegistered => "User registered";
+        public static string ResetPasswordRequest => "User requested to reset password";
     }
 }

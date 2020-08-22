@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using Microsoft.Extensions.Configuration;
@@ -8,21 +9,43 @@ namespace PaperStreet.Authentication.Application.Services
 {
     public class EmailBuilder : IEmailBuilder
     {
-        private readonly IConfiguration _configuration;
+        private readonly string _websiteUrl;
         public EmailBuilder(IConfiguration configuration)
         {
-            _configuration = configuration;
+            _websiteUrl = configuration.GetValue<string>("WebsiteUrl");
         }
         
         public string ConfirmationEmail(string firstName, string userId, string emailConfirmationCode)
         {
-            var webSiteUrl = _configuration.GetValue<string>("WebSiteUrl");
-
             var encodedUserId = HttpUtility.UrlEncode(userId);
             var encodedEmailConfirmationCode = HttpUtility.UrlEncode(emailConfirmationCode);
             
-            var emailUrl = 
-                new Uri($"https://{webSiteUrl}/api/v1/authentication/confirm-email/{encodedUserId}/{encodedEmailConfirmationCode}");
+            // TODO: Update url to send user to website frontend with token in the url to be passed into an API call on page load  
+            var emailUrl = $"https://{_websiteUrl}/api/v1/authentication/confirm-email/{encodedUserId}/{encodedEmailConfirmationCode}";
+            
+            var sb = new StringBuilder();
+            
+            sb.Append($"<p>Hi {firstName}</p>");
+            sb.Append("<br />");
+            sb.Append("<br />");
+            sb.Append("<p>Please confirm your account by clicking on the link below.<p>");
+            sb.Append("<br />");
+            sb.Append("<br />");
+            sb.Append($"<a href=\"{emailUrl}\">Confirm Account :)</a>");
+            sb.Append("<br />");
+            sb.Append("<br />");
+            sb.Append("<p>Thanks<p>");
+
+            return sb.ToString();
+        }
+
+        public string ResetPasswordEmail(string firstName, string userId, string resetPasswordConfirmationCode)
+        {
+            var encodedUserId = HttpUtility.UrlEncode(userId);
+            var encodedResetPasswordCode = HttpUtility.UrlEncode(resetPasswordConfirmationCode);
+            
+            // TODO: Update url to send user to website frontend with token in the url to be passed into an API call when user resets password
+            var emailUrl = $"https://{_websiteUrl}/api/v1/authentication/reset-password/{encodedUserId}/{encodedResetPasswordCode}";
             
             var sb = new StringBuilder();
             
