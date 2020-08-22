@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using PaperStreet.Authentication.Application.Commands;
@@ -29,11 +30,12 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
         public async Task<User> Handle(ConfirmEmail.Command request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            
             if (user == null)
                 throw new RestException(HttpStatusCode.Unauthorized);
 
-            var userConfirmed = await _userManager.ConfirmEmailAsync(user, request.EmailConfirmationCode);
+            var decodedEmailConfirmationToken = HttpUtility.UrlDecode(request.EmailConfirmationCode);
+            var rebuiltEmailConfirmationToken = decodedEmailConfirmationToken.Replace(" ", "+");
+            var userConfirmed = await _userManager.ConfirmEmailAsync(user, rebuiltEmailConfirmationToken);
 
             if (!userConfirmed.Succeeded) throw new RestException(HttpStatusCode.Unauthorized);
             

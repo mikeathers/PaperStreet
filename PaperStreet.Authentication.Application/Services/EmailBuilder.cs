@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Web;
 using Microsoft.Extensions.Configuration;
 using PaperStreet.Authentication.Application.Interfaces;
 
@@ -16,8 +17,12 @@ namespace PaperStreet.Authentication.Application.Services
         public string ConfirmationEmail(string firstName, string userId, string emailConfirmationCode)
         {
             var webSiteUrl = _configuration.GetValue<string>("WebSiteUrl");
+
+            var encodedUserId = HttpUtility.UrlEncode(userId);
+            var encodedEmailConfirmationCode = HttpUtility.UrlEncode(emailConfirmationCode);
             
-            var emailUrl = new Uri($"http://{webSiteUrl}/api/authentication/confirm-email/{userId}/{emailConfirmationCode}", UriKind.Absolute);
+            var emailUrl = 
+                new Uri($"https://{webSiteUrl}/api/v1/authentication/confirm-email/{encodedUserId}/{encodedEmailConfirmationCode}");
             
             var sb = new StringBuilder();
             
@@ -27,7 +32,7 @@ namespace PaperStreet.Authentication.Application.Services
             sb.Append("<p>Please confirm your account by clicking on the link below.<p>");
             sb.Append("<br />");
             sb.Append("<br />");
-            sb.Append($"<a href={emailUrl}>Confirm Account :)</a>");
+            sb.Append($"<a href=\"{emailUrl}\">Confirm Account :)</a>");
             sb.Append("<br />");
             sb.Append("<br />");
             sb.Append("<p>Thanks<p>");
