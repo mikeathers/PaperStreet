@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +10,7 @@ using PaperStreet.Authentication.Application.Queries;
 using PaperStreet.Authentication.Application.QueryHandlers;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
+using PaperStreet.Domain.Core.Events.Errors;
 using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Domain.Core.Models;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
@@ -38,17 +41,16 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         }
 
         [Fact]
-        public async Task GivenLoginUserQueryHandler_WhenCorrectLoginInfoProvided_ThenShouldAuthenticateUser()
+        public async Task GivenLoginUserQueryHandler_WhenCorrectLoginInfoProvided_ThenShouldCallUserManagerToFindUser()
         {
             _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
             _mockUserManager.CheckPasswordAsync(_user, _query.Password).ReturnsForAnyArgs(true);
             
             var loginUserQueryHandler = new LoginUserQueryHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
 
-            var authenticatedUser = await loginUserQueryHandler.Handle(_query, CancellationToken.None);
+            await loginUserQueryHandler.Handle(_query, CancellationToken.None);
             
-            Assert.NotNull(authenticatedUser);
-            Assert.Equal(authenticatedUser.Email, _query.Email);
+            await _mockUserManager.Received().FindByEmailAsync(Arg.Any<string>());
         }
         
         [Fact]
@@ -62,6 +64,50 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         }
         
         [Fact]
+        public async Task
+            GivenLoginUserQueryHandler_WhenCorrectLoginInfoProvided_ThenShouldCallUserManagerToCheckPassword()
+        {
+            _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
+            _mockUserManager.CheckPasswordAsync(_user, _query.Password).ReturnsForAnyArgs(true);
+            
+            var loginUserQueryHandler = new LoginUserQueryHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
+
+            await loginUserQueryHandler.Handle(_query, CancellationToken.None);
+            
+            await _mockUserManager.Received().CheckPasswordAsync(Arg.Any<AppUser>(), Arg.Any<string>());
+        }
+        
+        [Fact]
+        public async Task
+            GivenLoginUserQueryHandler_WhenCheckingPasswordFails_ThenShouldPublishLogErrorEvent()
+        {
+            _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
+            _mockUserManager.CheckPasswordAsync(_user, _query.Password).ReturnsForAnyArgs(false);
+            
+            var loginUserQueryHandler = new LoginUserQueryHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
+
+            try
+            {
+                await loginUserQueryHandler.Handle(_query, CancellationToken.None);
+            }
+            catch
+            {
+                _mockEventBus.Received().Publish(Arg.Any<LogErrorEvent>());
+            }
+        }
+        
+        [Fact]
+        public async Task GivenLoginUserQueryHandler_WhenCheckingPasswordFails_ThenShouldThrowRestException()
+        {
+            _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
+            _mockUserManager.CheckPasswordAsync(_user, _query.Password).ReturnsForAnyArgs(false);
+            
+            var loginUserQueryHandler = new LoginUserQueryHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
+
+            await Assert.ThrowsAsync<RestException>(() =>loginUserQueryHandler.Handle(_query, CancellationToken.None));
+        }
+        
+        [Fact]
         public async Task GivenLoginUserQueryHandler_WhenUserAuthenticated_ThenShouldPublishAuthenticationLogEvent()
         {
             _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
@@ -72,6 +118,20 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
             await loginUserQueryHandler.Handle(_query, CancellationToken.None);
             
             _mockEventBus.Received().Publish(Arg.Any<AuthenticationLogEvent>());
+        }
+        
+        [Fact]
+        public async Task GivenLoginUserQueryHandler_WhenCorrectLoginInfoProvided_ThenShouldAuthenticateUser()
+        {
+            _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
+            _mockUserManager.CheckPasswordAsync(_user, _query.Password).ReturnsForAnyArgs(true);
+            
+            var loginUserQueryHandler = new LoginUserQueryHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
+
+            var authenticatedUser = await loginUserQueryHandler.Handle(_query, CancellationToken.None);
+            
+            Assert.NotNull(authenticatedUser);
+            Assert.Equal(authenticatedUser.Email, _query.Email);
         }
     }
 }

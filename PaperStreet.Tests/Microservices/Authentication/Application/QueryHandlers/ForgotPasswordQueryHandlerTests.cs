@@ -44,7 +44,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         {
             _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
             
-            var forgotPasswordQueryHandler = new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+            var forgotPasswordQueryHandler =
+                new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
             
             await forgotPasswordQueryHandler.Handle(_query, CancellationToken.None);
 
@@ -56,18 +57,21 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         {
             _mockUserManager.FindByEmailAsync(_query.Email).ReturnsNullForAnyArgs();
             
-            var forgotPasswordQueryHandler = new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+            var forgotPasswordQueryHandler =
+                new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
 
             await Assert.ThrowsAsync<RestException>(() =>
                 forgotPasswordQueryHandler.Handle(_query, CancellationToken.None));
         }
 
         [Fact]
-        public async Task GivenForgotPasswordQueryHandler_WhenReceivesCorrectCommand_ThenShouldCallUserManagerToGeneratePasswordResetToken()
+        public async Task
+            GivenForgotPasswordQueryHandler_WhenReceivesCorrectCommand_ThenShouldCallUserManagerToGeneratePasswordResetToken()
         {
             _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
             
-            var forgotPasswordQueryHandler = new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+            var forgotPasswordQueryHandler =
+                new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
             
             await forgotPasswordQueryHandler.Handle(_query, CancellationToken.None);
 
@@ -75,11 +79,13 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         }
         
         [Fact]
-        public async Task GivenForgotPasswordQueryHandler_WhenReceivesCorrectCommand_ThenShouldCallEmailBuilderToGetPasswordResetEmail()
+        public async Task
+            GivenForgotPasswordQueryHandler_WhenReceivesCorrectCommand_ThenShouldCallEmailBuilderToGetPasswordResetEmail()
         {
             _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
             
-            var forgotPasswordQueryHandler = new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+            var forgotPasswordQueryHandler =
+                new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
             
             await forgotPasswordQueryHandler.Handle(_query, CancellationToken.None);
 
@@ -91,7 +97,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         {
             _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
             
-            var forgotPasswordQueryHandler = new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+            var forgotPasswordQueryHandler =
+                new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
             
             await forgotPasswordQueryHandler.Handle(_query, CancellationToken.None);
 
@@ -99,11 +106,13 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         }
         
         [Fact]
-        public async Task GivenForgotPasswordQueryHandler_WhenReceivesCorrectCommand_ThenShouldPublishResetPasswordRequestEvent()
+        public async Task
+            GivenForgotPasswordQueryHandler_WhenReceivesCorrectCommand_ThenShouldPublishResetPasswordRequestEvent()
         {
             _mockUserManager.FindByEmailAsync(_query.Email).ReturnsForAnyArgs(_user);
             
-            var forgotPasswordQueryHandler = new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+            var forgotPasswordQueryHandler =
+                new ForgotPasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
             
             await forgotPasswordQueryHandler.Handle(_query, CancellationToken.None);
 
