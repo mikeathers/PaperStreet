@@ -1,6 +1,5 @@
 using FluentValidation;
 using MediatR;
-using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Authentication.Domain.Validators;
 
 namespace PaperStreet.Authentication.Application.Commands

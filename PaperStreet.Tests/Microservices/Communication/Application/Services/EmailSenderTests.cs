@@ -38,7 +38,7 @@ namespace PaperStreet.Tests.Microservices.Communication.Application.Services
         }
 
         [Fact]
-        public async Task GivenEmailSender_WhenEmailFailsToSend_ThenShouldPublishEmailFailedToSendEvent()
+        public async Task GivenEmailSender_WhenEmailFailsToSend_ThenShouldPublishLogErrorEvent()
         {
             _mockSendGridClient.SendEmailAsync(_emailToSend)
                 .ReturnsForAnyArgs(HttpStatusCode.NotFound);
@@ -46,7 +46,7 @@ namespace PaperStreet.Tests.Microservices.Communication.Application.Services
             var emailSender = new EmailSender(_mockSendGridClient, _mockEventBus);
             await emailSender.SendEmail(_emailToSend);
             
-            _mockEventBus.Received().Publish(Arg.Any<EmailFailedToSendEvent>());
+            _mockEventBus.Received().Publish(Arg.Any<LogErrorEvent>());
         }
     }
 }

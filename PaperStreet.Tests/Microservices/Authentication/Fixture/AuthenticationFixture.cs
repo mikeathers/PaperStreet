@@ -17,6 +17,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.Fixture
         public IEmailBuilder EmailBuilder { get; private set; }
         public IUserConfirmationEmail UserConfirmationEmail { get; private set; }
         
+        public IFailedIdentityResult FailedIdentityResult { get; private set; }
+        
         public AuthenticationFixture()
         {
             CreateFixtureData();
@@ -49,6 +51,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.Fixture
             var userConfirmationEmail = Substitute.For<IUserConfirmationEmail>();
             UserConfirmationEmail = userConfirmationEmail;
 
+            var failedIdentityResult = Substitute.For<IFailedIdentityResult>();
+            FailedIdentityResult = failedIdentityResult;
         }
     }
 }

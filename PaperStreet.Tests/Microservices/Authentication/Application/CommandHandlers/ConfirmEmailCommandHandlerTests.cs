@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -20,67 +21,146 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         private readonly UserManager<AppUser> _mockUserManager;
         private readonly IJwtGenerator _mockJwtGenerator;
         private readonly IEventBus _mockEventBus;
+        private readonly IFailedIdentityResult _mockFailedIdentityResult;
         private readonly ConfirmEmail.Command _command;
         private readonly AppUser _user;
-        
-        private static string EmailConfirmationToken => "101010101";
-        private static string UserId => "1092093dk0230-2";
+
+        private readonly string _emailConfirmationToken;
+        private readonly string _email;
 
         public ConfirmEmailCommandHandlerTests(AuthenticationFixture fixture)
         {
             _mockUserManager = fixture.UserManager;
             _mockJwtGenerator = fixture.JwtGenerator;
             _mockEventBus = fixture.EventBus;
+            _mockFailedIdentityResult = fixture.FailedIdentityResult;
             _user = fixture.TestUser;
             _user.EmailConfirmed = true;
+
+            _email = "test@gmail.com";
+            _emailConfirmationToken = "1010d1d120e";
             
             _command = new ConfirmEmail.Command
             {
-                UserId = "101010101",
+                Email = _email,
                 EmailConfirmationCode = "1092093dk0230-2"
             };
         }
 
         [Fact]
-        public async Task GivenConfirmEmailCommandHandler_WhenReceivesCorrectCommand_ThenShouldConfirmUserAccountAndReturnUser()
+        public async Task
+            GivenConfirmEmailCommandHandler_WhenReceivesCorrectCommand_ThenShouldCallUserManagerToFindByEmail()
         {
-            _mockUserManager.ConfirmEmailAsync(_user, EmailConfirmationToken)
-                            .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
+            _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
+                .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
-            _mockUserManager.FindByIdAsync(UserId).ReturnsForAnyArgs(_user);
+            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
 
-            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
+                _mockEventBus, _mockFailedIdentityResult);
 
-            var confirmedUser = await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
-            
-            Assert.NotNull(confirmedUser);
-            Assert.True(confirmedUser.EmailConfirmed);
+            await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
+
+            await _mockUserManager.Received().FindByEmailAsync(_email);
         }
         
         [Fact]
         public async Task GivenConfirmEmailCommandHandler_WhenUserIsNotFound_ThenShouldThrowRestException()
         {
-            _mockUserManager.FindByIdAsync(UserId).ReturnsNullForAnyArgs();
+            _mockUserManager.FindByEmailAsync(_email).ReturnsNullForAnyArgs();
 
-            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
+                _mockEventBus, _mockFailedIdentityResult);
 
             await Assert.ThrowsAsync<RestException>(() =>
                 confirmEmailCommandHandler.Handle(_command, CancellationToken.None));
         }
         
         [Fact]
-        public async Task GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldPublishAuthenticationLogEvent()
+        public async Task
+            GivenConfirmEmailCommandHandler_WhenEmailConfirmFails_ThenShouldCallFailedIdentityResult()
         {
-            _mockUserManager.ConfirmEmailAsync(_user, EmailConfirmationToken)
+            _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
+                .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Failed()));
+            
+            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
+
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
+                _mockEventBus, _mockFailedIdentityResult);
+
+            await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
+
+            _mockFailedIdentityResult.Received()
+                .Handle(Arg.Any<AppUser>(), Arg.Any<List<IdentityError>>(), Arg.Any<string>());
+        }
+        
+        [Fact]
+        public async Task
+            GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldCallJwtGenerator()
+        {
+            _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
-            _mockUserManager.FindByIdAsync(UserId).ReturnsForAnyArgs(_user);
+            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
 
-            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator, _mockEventBus);
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
+                _mockEventBus, _mockFailedIdentityResult);
+
+            await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
+
+            _mockJwtGenerator.Received().CreateToken(_user);
+            _mockJwtGenerator.Received().GenerateRefreshToken();
+        }
+        
+        [Fact]
+        public async Task
+            GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldCallUserManagerToUpdateUser()
+        {
+            _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
+                .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
+            
+            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
+
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
+                _mockEventBus, _mockFailedIdentityResult);
+
+            await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
+
+            await _mockUserManager.Received().UpdateAsync(_user);
+        }
+
+        [Fact]
+        public async Task GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldPublishAuthenticationLogEvent()
+        {
+            _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
+                .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
+            
+            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
+
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
+                _mockEventBus, _mockFailedIdentityResult);
 
             await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
             
             _mockEventBus.Received().Publish(Arg.Any<AuthenticationLogEvent>());
+        }
+        
+        [Fact]
+        public async Task
+            GivenConfirmEmailCommandHandler_WhenReceivesCorrectCommand_ThenShouldConfirmUserAccountAndReturnUser()
+        {
+            _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
+                .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
+            
+            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
+
+            var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
+                _mockEventBus, _mockFailedIdentityResult);
+
+            var confirmedUser = await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
+            
+            Assert.NotNull(confirmedUser);
+            Assert.True(confirmedUser.EmailConfirmed);
         }
     }
 }

@@ -1,13 +1,14 @@
 namespace PaperStreet.Domain.Core.Events.Errors
 {
-    public class ErrorEvent : Event
+    public class LogErrorEvent : Event
     {
         public string UserId { get; }
         public string Message { get; set; }
 
-        public ErrorEvent(string userId)
+        public LogErrorEvent(string userId, string message)
         {
             UserId = userId;
+            Message = message;
         }
     }
 }

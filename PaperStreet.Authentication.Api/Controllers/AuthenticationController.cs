@@ -41,7 +41,7 @@ namespace PaperStreet.Authentication.Api.Controllers
         {
             var confirmEmailQuery = new ConfirmEmail.Command
             {
-                UserId = userId,
+                Email = userId,
                 EmailConfirmationCode = emailConfirmationCode
             };
             

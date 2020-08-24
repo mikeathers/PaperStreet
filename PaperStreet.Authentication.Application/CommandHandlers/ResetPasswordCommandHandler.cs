@@ -20,12 +20,15 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
         private readonly UserManager<AppUser> _userManager;
         private readonly IEventBus _eventBus;
         private readonly IEmailBuilder _emailBuilder;
+        private readonly IFailedIdentityResult _failedIdentityResult;
         
-        public ResetPasswordCommandHandler(UserManager<AppUser> userManager, IEventBus eventBus, IEmailBuilder emailBuilder)
+        public ResetPasswordCommandHandler(UserManager<AppUser> userManager, IEventBus eventBus,
+            IEmailBuilder emailBuilder, IFailedIdentityResult failedIdentityResult)
         {
             _userManager = userManager;
             _eventBus = eventBus;
             _emailBuilder = emailBuilder;
+            _failedIdentityResult = failedIdentityResult;
         }
 
         public async Task<bool> Handle(ResetPassword.Command request, CancellationToken cancellationToken)
@@ -37,14 +40,18 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             var passwordReset =
                 await _userManager.ResetPasswordAsync(user, request.ResetPasswordToken, request.NewPassword);
 
-            if (!passwordReset.Succeeded) throw new Exception("Problem resetting password");
+            if (!passwordReset.Succeeded)
+            {
+                const string exceptionMessage = "Problem resetting password";
+                _failedIdentityResult.Handle(user, passwordReset.Errors, exceptionMessage);
+            }
 
-            var passwordChangedEmail = _emailBuilder.PasswordChangedEmail(user.FirstName);
+            var passwordChangedHtml = _emailBuilder.PasswordChangedEmail(user.FirstName);
             
             var emailToSend = new Email
             {
                 FirstName = user.FirstName,
-                HtmlContent = passwordChangedEmail,
+                HtmlContent = passwordChangedHtml,
                 PlainTextContent = null,
                 Subject = EmailSubjects.PasswordHasBeenChanged,
                 To = user.Email,
@@ -53,6 +60,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             
             _eventBus.Publish(new PasswordChangedEvent(user.Id));
             _eventBus.Publish(new SendEmailEvent(emailToSend));
+            
             return await Task.FromResult(true);
         }
     }

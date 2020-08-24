@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -21,6 +24,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         private readonly UserManager<AppUser> _mockUserManager;
         private readonly IEmailBuilder _mockEmailBuilder;
         private readonly IEventBus _mockEventBus;
+        private readonly IFailedIdentityResult _mockFailedIdentityResult;
         private readonly AppUser _user;
         private readonly ChangePassword.Command _command;
 
@@ -29,6 +33,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _mockUserManager = fixture.UserManager;
             _mockEmailBuilder = fixture.EmailBuilder;
             _mockEventBus = fixture.EventBus;
+            _mockFailedIdentityResult = fixture.FailedIdentityResult;
             _user = fixture.TestUser;
 
             _command = new ChangePassword.Command
@@ -48,7 +53,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
             var changePasswordCommandHandler =
-                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus, _mockFailedIdentityResult);
 
             await changePasswordCommandHandler.Handle(_command, CancellationToken.None);
 
@@ -62,7 +67,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _mockUserManager.FindByEmailAsync(_command.Email).ReturnsNullForAnyArgs();
             
             var changePasswordCommandHandler =
-                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus, _mockFailedIdentityResult);
 
             await Assert.ThrowsAsync<RestException>(() =>
                 changePasswordCommandHandler.Handle(_command, CancellationToken.None));
@@ -77,13 +82,30 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
             var changePasswordCommandHandler = 
-                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus, _mockFailedIdentityResult);
 
             await changePasswordCommandHandler.Handle(_command, CancellationToken.None);
 
             await _mockUserManager.Received().ChangePasswordAsync(_user, _command.CurrentPassword, _command.NewPassword);
         }
         
+        [Fact]
+        public async Task
+            GivenChangePasswordCommandHandler_WhenPasswordChangeFails_ThenShouldCallFailedIdentityResult()
+        {
+            _mockUserManager.FindByEmailAsync(_command.Email).ReturnsForAnyArgs(_user);
+            _mockUserManager.ChangePasswordAsync(_user, _command.CurrentPassword, _command.NewPassword)
+                .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Failed()));
+            
+            var changePasswordCommandHandler = 
+                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus, _mockFailedIdentityResult);
+
+            
+            await changePasswordCommandHandler.Handle(_command, CancellationToken.None);
+            
+            _mockFailedIdentityResult.Received().Handle(Arg.Any<AppUser>(), Arg.Any<List<IdentityError>>(), Arg.Any<string>());
+        }
+
         [Fact]
         public async Task
             GivenChangePasswordCommandHandler_WhenPasswordChanged_ThenShouldCallEmailBuilder()
@@ -93,7 +115,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
             var changePasswordCommandHandler = 
-                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus, _mockFailedIdentityResult);
 
             await changePasswordCommandHandler.Handle(_command, CancellationToken.None);
 
@@ -109,7 +131,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
             var changePasswordCommandHandler = 
-                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus, _mockFailedIdentityResult);
 
             await changePasswordCommandHandler.Handle(_command, CancellationToken.None);
 
@@ -125,7 +147,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
             var changePasswordCommandHandler = 
-                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus);
+                new ChangePasswordCommandHandler(_mockUserManager, _mockEmailBuilder, _mockEventBus, _mockFailedIdentityResult);
 
             await changePasswordCommandHandler.Handle(_command, CancellationToken.None);
 

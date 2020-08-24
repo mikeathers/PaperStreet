@@ -100,6 +100,7 @@ namespace PaperStreet.Authentication.Api
             services.AddTransient<IJwtGenerator, JwtGenerator>();
             services.AddTransient<IUserConfirmationEmail, UserConfirmationEmail>();
             services.AddTransient<IEmailBuilder, EmailBuilder>();
+            services.AddTransient<IFailedIdentityResult, FailedIdentityResult>();
             
             // Data
             services.AddTransient<AuthenticationDbContext>();

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -21,6 +22,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         private readonly UserManager<AppUser> _mockUserManager;
         private readonly IEventBus _mockEventBus;
         private readonly IEmailBuilder _mockEmailBuilder;
+        private readonly IFailedIdentityResult _mockFailedIdentityResult;
         private readonly ResetPassword.Command _command;
         private readonly AppUser _user;
         
@@ -29,6 +31,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _mockEventBus = fixture.EventBus;
             _mockUserManager = fixture.UserManager;
             _mockEmailBuilder = fixture.EmailBuilder;
+            _mockFailedIdentityResult = fixture.FailedIdentityResult;
             _user = fixture.TestUser;
 
             _command = new ResetPassword.Command
@@ -44,7 +47,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         {
             _mockUserManager.FindByEmailAsync(_command.Email).ReturnsForAnyArgs(_user);
             
-            var resetPasswordCommandHandler = new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder);
+            var resetPasswordCommandHandler =
+                new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder,
+                    _mockFailedIdentityResult);
 
             await resetPasswordCommandHandler.Handle(_command, CancellationToken.None);
 
@@ -56,24 +61,46 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         {
             _mockUserManager.FindByEmailAsync(_command.Email).ReturnsNullForAnyArgs();
             
-            var resetPasswordCommandHandler = new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder);
+            var resetPasswordCommandHandler =
+                new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder,
+                    _mockFailedIdentityResult);
 
             await Assert.ThrowsAsync<RestException>(() =>
                 resetPasswordCommandHandler.Handle(_command, CancellationToken.None));
         }
         
         [Fact]
-        public async Task GivenResetPasswordCommandHandler_WhenCorrectQueryReceived_ThenShouldUseUserManagerToResetPassword()
+        public async Task
+            GivenResetPasswordCommandHandler_WhenCorrectQueryReceived_ThenShouldUseUserManagerToResetPassword()
         {
             _mockUserManager.FindByEmailAsync(_command.Email).ReturnsForAnyArgs(_user);
             _mockUserManager.ResetPasswordAsync(_user, _command.ResetPasswordToken, _command.NewPassword)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
-            var resetPasswordCommandHandler = new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder);
+            var resetPasswordCommandHandler =
+                new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder,
+                    _mockFailedIdentityResult);
 
             await resetPasswordCommandHandler.Handle(_command, CancellationToken.None);
 
-            await _mockUserManager.Received().ResetPasswordAsync(_user, _command.ResetPasswordToken, _command.NewPassword);
+            await _mockUserManager.Received()
+                .ResetPasswordAsync(_user, _command.ResetPasswordToken, _command.NewPassword);
+        }
+        
+        [Fact]
+        public async Task GivenResetPasswordCommandHandler_WhenPasswordResetFails_ThenShouldCallFailedIdentityResult()
+        {
+            _mockUserManager.FindByEmailAsync(_command.Email).ReturnsForAnyArgs(_user);
+            _mockUserManager.ResetPasswordAsync(_user, _command.ResetPasswordToken, _command.NewPassword)
+                .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Failed()));
+            
+            var resetPasswordCommandHandler =
+                new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder,
+                    _mockFailedIdentityResult);
+
+            await resetPasswordCommandHandler.Handle(_command, CancellationToken.None);
+
+            _mockFailedIdentityResult.Received().Handle(Arg.Any<AppUser>(), Arg.Any<List<IdentityError>>(), Arg.Any<string>());
         }
         
         [Fact]
@@ -83,7 +110,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _mockUserManager.ResetPasswordAsync(_user, _command.ResetPasswordToken, _command.NewPassword)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
-            var resetPasswordCommandHandler = new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder);
+            var resetPasswordCommandHandler =
+                new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder,
+                    _mockFailedIdentityResult);
 
             await resetPasswordCommandHandler.Handle(_command, CancellationToken.None);
 
@@ -91,13 +120,16 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         }
         
         [Fact]
-        public async Task GivenResetPasswordCommandHandler_WhenPasswordHasBeenReset_ThenShouldPublishPasswordChangedEvent()
+        public async Task
+            GivenResetPasswordCommandHandler_WhenPasswordHasBeenReset_ThenShouldPublishPasswordChangedEvent()
         {
             _mockUserManager.FindByEmailAsync(_command.Email).ReturnsForAnyArgs(_user);
             _mockUserManager.ResetPasswordAsync(_user, _command.ResetPasswordToken, _command.NewPassword)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
-            var resetPasswordCommandHandler = new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder);
+            var resetPasswordCommandHandler =
+                new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder,
+                    _mockFailedIdentityResult);
 
             await resetPasswordCommandHandler.Handle(_command, CancellationToken.None);
 
@@ -111,7 +143,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _mockUserManager.ResetPasswordAsync(_user, _command.ResetPasswordToken, _command.NewPassword)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
             
-            var resetPasswordCommandHandler = new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder);
+            var resetPasswordCommandHandler =
+                new ResetPasswordCommandHandler(_mockUserManager, _mockEventBus, _mockEmailBuilder,
+                    _mockFailedIdentityResult);
 
             await resetPasswordCommandHandler.Handle(_command, CancellationToken.None);
 

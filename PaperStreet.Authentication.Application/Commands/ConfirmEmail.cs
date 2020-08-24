@@ -8,7 +8,7 @@ namespace PaperStreet.Authentication.Application.Commands
     {
         public class Command : IRequest<User>
         {
-            public string UserId { get; set; }
+            public string Email { get; set; }
             public string EmailConfirmationCode { get; set; }
         }
 
@@ -16,7 +16,7 @@ namespace PaperStreet.Authentication.Application.Commands
         {
             public QueryValidator()
             {
-                RuleFor(x => x.UserId).NotEmpty();
+                RuleFor(x => x.Email).NotEmpty();
                 RuleFor(x => x.EmailConfirmationCode).NotEmpty();
             }
         }

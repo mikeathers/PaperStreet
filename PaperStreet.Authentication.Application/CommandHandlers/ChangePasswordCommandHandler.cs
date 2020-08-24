@@ -9,8 +9,10 @@ using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Domain.KeyValuePairs;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
+using PaperStreet.Domain.Core.Events.Errors;
 using PaperStreet.Domain.Core.Events.User.Communication;
 using PaperStreet.Domain.Core.Events.User.Logging;
+using PaperStreet.Domain.Core.Formatters;
 using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.CommandHandlers
@@ -20,12 +22,15 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailBuilder _emailBuilder;
         private readonly IEventBus _eventBus;
+        private readonly IFailedIdentityResult _failedIdentityResult;
 
-        public ChangePasswordCommandHandler(UserManager<AppUser> userManager, IEmailBuilder emailBuilder, IEventBus eventBus)
+        public ChangePasswordCommandHandler(UserManager<AppUser> userManager, IEmailBuilder emailBuilder,
+            IEventBus eventBus, IFailedIdentityResult failedIdentityResult)
         {
             _userManager = userManager;
             _emailBuilder = emailBuilder;
             _eventBus = eventBus;
+            _failedIdentityResult = failedIdentityResult;
         }
         
         public async Task<bool> Handle(ChangePassword.Command request, CancellationToken cancellationToken)
@@ -34,9 +39,14 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             
             if (user == null) throw new RestException(HttpStatusCode.Unauthorized);
             
-            var passwordChanged = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
-            
-             if (!passwordChanged.Succeeded) throw new Exception("Problem changing password");
+            var passwordChanged =
+                await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+
+            if (!passwordChanged.Succeeded)
+            {
+                const string exceptionMessage = "Problem changing password";
+                _failedIdentityResult.Handle(user, passwordChanged.Errors, exceptionMessage);
+            }
                 
             var passwordChangedHtml = _emailBuilder.PasswordChangedEmail(user.FirstName);
             

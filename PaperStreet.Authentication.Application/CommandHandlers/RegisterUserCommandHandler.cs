@@ -4,10 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
-using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.User.Logging;
@@ -17,25 +15,28 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 {
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUser.Command, User>
     {
-        private readonly AuthenticationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IEventBus _eventBus;
         private readonly IUserConfirmationEmail _userConfirmationEmail;
+        private readonly IFailedIdentityResult _failedIdentityResult;
 
-        public RegisterUserCommandHandler(AuthenticationDbContext context, UserManager<AppUser> userManager,
-            IJwtGenerator jwtGenerator, IEventBus eventBus, IUserConfirmationEmail userConfirmationEmail)
+        public RegisterUserCommandHandler(UserManager<AppUser> userManager, IJwtGenerator jwtGenerator, 
+            IEventBus eventBus, IUserConfirmationEmail userConfirmationEmail, 
+            IFailedIdentityResult failedIdentityResult)
         {
-            _context = context;
             _userManager = userManager;
             _jwtGenerator = jwtGenerator;
             _eventBus = eventBus;
             _userConfirmationEmail = userConfirmationEmail;
+            _failedIdentityResult = failedIdentityResult;
         }
 
         public async Task<User> Handle(RegisterUser.Command request, CancellationToken cancellationToken)
         {
-            if (await _context.Users.AnyAsync(x => x.Email == request.Email, cancellationToken: cancellationToken))
+            var existingUser = await _userManager.FindByEmailAsync(request.Email);
+            
+            if (existingUser != null)
                 throw new RestException(HttpStatusCode.BadRequest, new {Email = "Email already exists"});
 
             var user = new AppUser
@@ -48,9 +49,13 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
                 RefreshTokenExpiry = DateTime.Now.AddDays(30)
             };
 
-            var result = await _userManager.CreateAsync(user, request.Password);
+            var userRegistered = await _userManager.CreateAsync(user, request.Password);
 
-            if (!result.Succeeded) throw new Exception("Problem registering user");
+            if (!userRegistered.Succeeded)
+            {
+                const string exceptionMessage = "Problem registering user";
+                _failedIdentityResult.Handle(user, userRegistered.Errors, exceptionMessage);
+            }
             
             _eventBus.Publish(new UserRegisteredEvent(user.Id));
 

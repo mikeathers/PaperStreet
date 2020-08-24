@@ -19,17 +19,21 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IEventBus _eventBus;
+        private readonly IFailedIdentityResult _failedIdentityResult;
         
-        public ConfirmEmailCommandHandler(UserManager<AppUser> userManager, IJwtGenerator jwtGenerator, IEventBus eventBus)
+        public ConfirmEmailCommandHandler(UserManager<AppUser> userManager, IJwtGenerator jwtGenerator,
+            IEventBus eventBus, IFailedIdentityResult failedIdentityResult)
         {
             _userManager = userManager;
             _jwtGenerator = jwtGenerator;
             _eventBus = eventBus;
+            _failedIdentityResult = failedIdentityResult;
         }
 
         public async Task<User> Handle(ConfirmEmail.Command request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId);
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            
             if (user == null)
                 throw new RestException(HttpStatusCode.Unauthorized);
 
@@ -37,8 +41,12 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             var rebuiltEmailConfirmationToken = decodedEmailConfirmationToken.Replace(" ", "+");
             var userConfirmed = await _userManager.ConfirmEmailAsync(user, rebuiltEmailConfirmationToken);
 
-            if (!userConfirmed.Succeeded) throw new Exception("Problem confirming account");
-            
+            if (!userConfirmed.Succeeded)
+            {
+                const string exceptionMessage = "Problem confirming account";
+                _failedIdentityResult.Handle(user, userConfirmed.Errors, exceptionMessage);
+            }
+
             user.RefreshToken = _jwtGenerator.GenerateRefreshToken();
             user.RefreshTokenExpiry = DateTime.Now.AddDays(30);
             

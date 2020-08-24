@@ -5,6 +5,9 @@
 
         <IsPackable>false</IsPackable>
     </PropertyGroup>
+    <PropertyGroup>
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="EfCore.TestSupport" Version="3.2.0" />
