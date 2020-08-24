@@ -44,5 +44,19 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.Services
             Assert.Contains(userId, resetPasswordEmail);
             Assert.Contains(resetPasswordConfirmationCode, resetPasswordEmail);
         }
+        
+        [Fact]
+        public void GivenEmailBuilder_WhenPasswordChangedEmailMethodFired_ThenShouldReturnStringOfHTML()
+        {
+            const string firstName = "Test User";
+
+            var mockConfiguration = Substitute.For<IConfiguration>();
+            
+            var emailBuilder = new EmailBuilder(mockConfiguration);
+            var passwordChangedEmail = emailBuilder.PasswordChangedEmail(firstName);
+
+            Assert.IsType<string>(passwordChangedEmail);
+            Assert.Contains(firstName, passwordChangedEmail);
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             var rebuiltEmailConfirmationToken = decodedEmailConfirmationToken.Replace(" ", "+");
             var userConfirmed = await _userManager.ConfirmEmailAsync(user, rebuiltEmailConfirmationToken);
 
-            if (!userConfirmed.Succeeded) throw new RestException(HttpStatusCode.Unauthorized);
+            if (!userConfirmed.Succeeded) throw new Exception("Problem confirming account");
             
             user.RefreshToken = _jwtGenerator.GenerateRefreshToken();
             user.RefreshTokenExpiry = DateTime.Now.AddDays(30);

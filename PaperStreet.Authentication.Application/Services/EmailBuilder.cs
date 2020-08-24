@@ -62,5 +62,20 @@ namespace PaperStreet.Authentication.Application.Services
 
             return sb.ToString();
         }
+
+        public string PasswordChangedEmail(string firstName)
+        {
+            var sb = new StringBuilder();
+            
+            sb.Append($"<p>Hi {firstName}</p>");
+            sb.Append("<br />");
+            sb.Append("<br />");
+            sb.Append("<p>Your password has been changed. If you did not reset change password, please get in touch immediately<p>");
+            sb.Append("<br />");
+            sb.Append("<br />");
+            sb.Append("<p>Thanks<p>");
+
+            return sb.ToString();
+        }
     }
 }

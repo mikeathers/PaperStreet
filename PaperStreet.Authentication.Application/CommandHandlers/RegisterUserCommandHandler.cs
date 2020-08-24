@@ -50,7 +50,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 
             var result = await _userManager.CreateAsync(user, request.Password);
 
-            if (!result.Succeeded) throw new Exception("Problem creating user");
+            if (!result.Succeeded) throw new Exception("Problem registering user");
             
             _eventBus.Publish(new UserRegisteredEvent(user.Id));
 
