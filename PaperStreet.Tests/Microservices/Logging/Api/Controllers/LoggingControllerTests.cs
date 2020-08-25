@@ -1,7 +1,7 @@
 using MediatR;
 using NSubstitute;
 using PaperStreet.Logging.Api.Controllers;
-using PaperStreet.Logging.Application.Queries.User;
+using PaperStreet.Logging.Application.Queries;
 using Xunit;
 
 namespace PaperStreet.Tests.Microservices.Logging.Api.Controllers
@@ -17,6 +17,17 @@ namespace PaperStreet.Tests.Microservices.Logging.Api.Controllers
             loggingController.GetAllAuthenticationLogs();
 
             mockMediator.Received().Send(Arg.Any<AllAuthenticationLogs.Query>());
+        }
+        
+        [Fact]
+        public void GivenAllErrorLogsGetMethod_WhenReceivesCorrectQuery_ThenFireMediatorSendMethod()
+        {
+            var mockMediator = Substitute.For<IMediator>();
+            var loggingController = new LoggingController(mockMediator);
+
+            loggingController.GetAllErrorLogs();
+
+            mockMediator.Received().Send(Arg.Any<AllErrorLogs.Query>());
         }
     }
 }

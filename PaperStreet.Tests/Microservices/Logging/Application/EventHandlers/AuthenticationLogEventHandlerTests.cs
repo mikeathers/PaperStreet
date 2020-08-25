@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
 using NSubstitute;
 using PaperStreet.Domain.Core.Events.User.Logging;
-using PaperStreet.Logging.Application.EventHandlers.User;
+using PaperStreet.Logging.Application.EventHandlers;
 using PaperStreet.Logging.Application.Interfaces;
 using PaperStreet.Logging.Domain.Models;
 using Xunit;
 
-namespace PaperStreet.Tests.Microservices.Logging.Application.EventHandlers.User
+namespace PaperStreet.Tests.Microservices.Logging.Application.EventHandlers
 {
     public class UserRegisteredEventHandlerTests
     {
@@ -15,7 +15,7 @@ namespace PaperStreet.Tests.Microservices.Logging.Application.EventHandlers.User
         {
             const string userId = "12340-223d234d";
 
-            var mockLoggingRepository = Substitute.For<ILoggingRepository>();
+            var mockLoggingRepository = Substitute.For<IAuthenticationLogRepository>();
             var authenticationLogEvent =new UserRegisteredEvent(userId);
             var userRegisteredEventHandler = new AuthenticationLogEventHandler(mockLoggingRepository);
             

@@ -15,9 +15,9 @@ using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Infra.IoC;
 using PaperStreet.Logging.Api.Middleware;
-using PaperStreet.Logging.Application.EventHandlers.User;
+using PaperStreet.Logging.Application.EventHandlers;
 using PaperStreet.Logging.Application.Interfaces;
-using PaperStreet.Logging.Application.Queries.User;
+using PaperStreet.Logging.Application.Queries;
 using PaperStreet.Logging.Data.Context;
 using PaperStreet.Logging.Data.Repository;
 
@@ -78,7 +78,7 @@ namespace PaperStreet.Logging.Api
                 });
         }
 
-        private void RegisterIoCServices(IServiceCollection services)
+        private static void RegisterIoCServices(IServiceCollection services)
         {
             RegisterEventBus.RegisterServices(services);
             
@@ -89,7 +89,7 @@ namespace PaperStreet.Logging.Api
             services.AddTransient<IEventHandler<AuthenticationLogEvent>, AuthenticationLogEventHandler>();
             
             // Data
-            services.AddTransient<ILoggingRepository, LoggingRepository>();
+            services.AddTransient<IAuthenticationLogRepository, AuthenticationLogRepository>();
             services.AddTransient<LoggingDbContext>();
             
         }

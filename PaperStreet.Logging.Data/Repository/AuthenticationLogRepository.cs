@@ -8,19 +8,18 @@ using PaperStreet.Logging.Domain.Models;
 
 namespace PaperStreet.Logging.Data.Repository
 {
-    public class LoggingRepository : ILoggingRepository
+    public class AuthenticationLogRepository : IAuthenticationLogRepository
     {
         private readonly LoggingDbContext _context;
 
-        public LoggingRepository(LoggingDbContext context)
+        public AuthenticationLogRepository(LoggingDbContext context)
         {
             _context = context;
         }
 
         public async Task<List<AuthenticationLog>> GetAllAuthenticationLogs()
         {
-            var logs = await _context.AuthenticationLogs.ToListAsync();
-            return logs;
+            return await _context.AuthenticationLogs.ToListAsync();
         }
 
         public async Task<AuthenticationLog> SaveAuthenticationLog(AuthenticationLog authenticationLog)

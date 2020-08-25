@@ -8,7 +8,6 @@ namespace PaperStreet.Logging.Domain.Models
         public DateTime Timestamp { get; set; }
         public string MessageType { get; set; }
         public string UserId { get; set; }
-        public string LogType { get; set; }
-        public string LogMessage { get; set; }
+        
     }
 }

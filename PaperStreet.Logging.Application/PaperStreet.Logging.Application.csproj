@@ -5,8 +5,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="CommandHandlers\User" />
-      <Folder Include="Commands\User" />
+      <Folder Include="CommandHandlers" />
+      <Folder Include="Commands" />
       <Folder Include="Validators" />
     </ItemGroup>
 

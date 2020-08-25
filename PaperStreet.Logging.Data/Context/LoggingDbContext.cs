@@ -16,5 +16,6 @@ namespace PaperStreet.Logging.Data.Context
         }
 
         public DbSet<AuthenticationLog> AuthenticationLogs { get; set; }
+        public DbSet<ErrorLog> ErrorLogs { get; set; }
     }
 }

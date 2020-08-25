@@ -4,15 +4,15 @@ using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Logging.Application.Interfaces;
 using PaperStreet.Logging.Domain.Models;
 
-namespace PaperStreet.Logging.Application.EventHandlers.User
+namespace PaperStreet.Logging.Application.EventHandlers
 {
     public class AuthenticationLogEventHandler : IEventHandler<AuthenticationLogEvent>
     {
-        private readonly ILoggingRepository _loggingRepository;
+        private readonly IAuthenticationLogRepository _authenticationLogRepository;
 
-        public AuthenticationLogEventHandler(ILoggingRepository loggingRepository)
+        public AuthenticationLogEventHandler(IAuthenticationLogRepository authenticationLogRepository)
         {
-            _loggingRepository = loggingRepository;
+            _authenticationLogRepository = authenticationLogRepository;
         }
 
         public async Task Handle(AuthenticationLogEvent logEvent)
@@ -26,7 +26,7 @@ namespace PaperStreet.Logging.Application.EventHandlers.User
                 LogType = logEvent.LogType
             };
 
-            await _loggingRepository.SaveAuthenticationLog(authenticationLog);
+            await _authenticationLogRepository.SaveAuthenticationLog(authenticationLog);
         }
     }
 }

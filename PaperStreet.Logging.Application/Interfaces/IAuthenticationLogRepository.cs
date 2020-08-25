@@ -4,7 +4,7 @@ using PaperStreet.Logging.Domain.Models;
 
 namespace PaperStreet.Logging.Application.Interfaces
 {
-    public interface ILoggingRepository
+    public interface IAuthenticationLogRepository
     {
         Task<List<AuthenticationLog>> GetAllAuthenticationLogs();
         Task<AuthenticationLog> SaveAuthenticationLog(AuthenticationLog authenticationLog);

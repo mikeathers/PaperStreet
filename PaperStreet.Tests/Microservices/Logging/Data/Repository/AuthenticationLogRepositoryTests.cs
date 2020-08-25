@@ -11,10 +11,10 @@ using Xunit;
 
 namespace PaperStreet.Tests.Microservices.Logging.Data.Repository
 {
-    public class LoggingRepositoryTests
+    public class AuthenticationLogRepositoryTests
     {
         [Fact]
-        public async Task GivenLoggingRepository_WhenCorrectAuthenticationLogDataIsReceived_ThenShouldPersistLog()
+        public async Task GivenSaveAuthenticationLog_WhenCorrectAuthenticationLogDataIsReceived_ThenShouldPersistLog()
         {
             var options = SqliteInMemory.CreateOptions<LoggingDbContext>();
             await using var context = new LoggingDbContext(options);
@@ -30,7 +30,7 @@ namespace PaperStreet.Tests.Microservices.Logging.Data.Repository
                 };
 
                 var authenticationLogCount = context.AuthenticationLogs.Count();
-                var loggingRepository = new LoggingRepository(context);
+                var loggingRepository = new AuthenticationLogRepository(context);
                 await loggingRepository.SaveAuthenticationLog(authenticationLog);
                 var updatedAuthenticationLogCount = context.AuthenticationLogs.Count();
                 
@@ -39,7 +39,7 @@ namespace PaperStreet.Tests.Microservices.Logging.Data.Repository
         }
         
         [Fact]
-        public async Task GivenAllAuthenticationLogsQueryHandler_WhenRequestIsMade_ThenShouldReturnCorrectData()
+        public async Task GivenGetAllAuthenticationLogs_WhenRequestIsMade_ThenShouldReturnCorrectData()
         {
             var options = SqliteInMemory.CreateOptions<LoggingDbContext>();
             await using var context = new LoggingDbContext(options);
@@ -47,7 +47,7 @@ namespace PaperStreet.Tests.Microservices.Logging.Data.Repository
                 await context.Database.EnsureCreatedAsync();
                 context.SeedSingleAuthenticationLog();
                 
-                var loggingRepository = new LoggingRepository(context);
+                var loggingRepository = new AuthenticationLogRepository(context);
                 var logs = await loggingRepository.GetAllAuthenticationLogs();
 
                 Assert.IsType<List<AuthenticationLog>>(logs);

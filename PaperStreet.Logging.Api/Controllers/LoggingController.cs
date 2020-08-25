@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PaperStreet.Logging.Application.Queries.User;
+using PaperStreet.Logging.Application.Queries;
 using PaperStreet.Logging.Domain.Models;
 
 namespace PaperStreet.Logging.Api.Controllers
@@ -18,10 +18,16 @@ namespace PaperStreet.Logging.Api.Controllers
             _mediator = mediator;
         }
         
-        [HttpGet, Route("all-authentication-logs")]
+        [HttpGet("all-authentication-logs")]
         public async Task<ActionResult<List<AuthenticationLog>>> GetAllAuthenticationLogs()
         {
             return await _mediator.Send(new AllAuthenticationLogs.Query());
+        }
+
+        [HttpGet("all-error-logs")]
+        public async Task<ActionResult<List<ErrorLog>>> GetAllErrorLogs()
+        {
+            return await _mediator.Send(new AllErrorLogs.Query());
         }
     }
 }
