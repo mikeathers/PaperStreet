@@ -4,18 +4,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using NWebsec.Core.Common.HttpHeaders;
 using PaperStreet.Authentication.Application.CommandHandlers;
 using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
-using PaperStreet.Authentication.Data.Context;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Domain.Core.Models;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
-using PaperStreet.Tests.Microservices.Authentication.SeedData;
-using TestSupport.EfHelpers;
 using Xunit;
 
 namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHandlers
@@ -27,7 +23,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         private readonly IEventBus _mockEventBus;
         private readonly IUserConfirmationEmail _mockUserConfirmationEmail;
         private readonly IFailedIdentityResult _mockFailedIdentityResult;
-        private readonly RegisterUser.Command _command;
+        private readonly RegisterUserCommand _command;
         private readonly AppUser _user;
             
         public RegisterUserCommandHandlerTests(AuthenticationFixture fixture)
@@ -39,7 +35,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _mockFailedIdentityResult = fixture.FailedIdentityResult;
             _user = fixture.TestUser;
             
-            _command = new RegisterUser.Command
+            _command = new RegisterUserCommand
             {
                 FirstName = "Test User",
                 Email = "testuser@gmail.com",

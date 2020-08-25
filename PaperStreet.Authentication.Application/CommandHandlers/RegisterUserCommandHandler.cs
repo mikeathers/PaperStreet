@@ -13,7 +13,7 @@ using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.CommandHandlers
 {
-    public class RegisterUserCommandHandler : IRequestHandler<RegisterUser.Command, User>
+    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, User>
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
@@ -32,7 +32,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             _failedIdentityResult = failedIdentityResult;
         }
 
-        public async Task<User> Handle(RegisterUser.Command request, CancellationToken cancellationToken)
+        public async Task<User> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             

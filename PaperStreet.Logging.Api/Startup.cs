@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PaperStreet.Domain.Core.Bus;
+using PaperStreet.Domain.Core.Events.Errors;
 using PaperStreet.Domain.Core.Events.User.Logging;
 using PaperStreet.Infra.IoC;
 using PaperStreet.Logging.Api.Middleware;
@@ -49,14 +50,14 @@ namespace PaperStreet.Logging.Api
                 });
             });
             
-            services.AddMediatR(typeof(AllAuthenticationLogs.Query).Assembly);
+            services.AddMediatR(typeof(AllAuthenticationLogsQuery).Assembly);
 
             RegisterIoCServices(services);
             AddJwtAuthentication(services, Configuration);
 
             services.AddControllers().AddFluentValidation(cfg => 
             {
-                cfg.RegisterValidatorsFromAssemblyContaining<AllAuthenticationLogs.Query>();
+                cfg.RegisterValidatorsFromAssemblyContaining<AllAuthenticationLogsQuery>();
             });
         }
         
@@ -84,12 +85,15 @@ namespace PaperStreet.Logging.Api
             
             // Subscriptions
             services.AddTransient<AuthenticationLogEventHandler>();
+            services.AddTransient<ErrorLogEventHandler>();
             
             // Domain Events
             services.AddTransient<IEventHandler<AuthenticationLogEvent>, AuthenticationLogEventHandler>();
+            services.AddTransient<IEventHandler<ErrorLogEvent>, ErrorLogEventHandler>(); 
             
             // Data
             services.AddTransient<IAuthenticationLogRepository, AuthenticationLogRepository>();
+            services.AddTransient<IErrorLogRepository, ErrorLogRepository>();
             services.AddTransient<LoggingDbContext>();
             
         }
@@ -125,6 +129,7 @@ namespace PaperStreet.Logging.Api
         {
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
             eventBus.Subscribe<AuthenticationLogEvent, AuthenticationLogEventHandler>();
+            eventBus.Subscribe<ErrorLogEvent, ErrorLogEventHandler>();
         }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
@@ -60,10 +59,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.Services
             }
             catch 
             {
-                mockEventBus.Received(2).Publish(Arg.Any<LogErrorEvent>());    
+                mockEventBus.Received(2).Publish(Arg.Any<ErrorLogEvent>());    
             }
         }
-
-        
     }
 }

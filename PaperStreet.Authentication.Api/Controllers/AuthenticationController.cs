@@ -21,7 +21,7 @@ namespace PaperStreet.Authentication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(RegisterUser.Command command)
+        public async Task<ActionResult<User>> Register(RegisterUserCommand command)
         {
             var user = await _mediator.Send(command);
             return Ok(user);
@@ -29,7 +29,7 @@ namespace PaperStreet.Authentication.Api.Controllers
         
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<User>> Login(LoginUser.Query query)
+        public async Task<ActionResult<User>> Login(LoginUserQuery query)
         {
             var user = await _mediator.Send(query);
             return Ok(user);
@@ -39,7 +39,7 @@ namespace PaperStreet.Authentication.Api.Controllers
         [HttpGet("confirm-email/{userId}/{emailConfirmationCode}")]
         public async Task<ActionResult<User>> ConfirmEmail(string userId, string emailConfirmationCode)
         {
-            var confirmEmailQuery = new ConfirmEmail.Command
+            var confirmEmailQuery = new ConfirmEmailCommand
             {
                 Email = userId,
                 EmailConfirmationCode = emailConfirmationCode
@@ -51,7 +51,7 @@ namespace PaperStreet.Authentication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("forgot-password")]
-        public async Task<ActionResult> ForgotPassword(ForgotPassword.Query forgotPasswordQuery)
+        public async Task<ActionResult> ForgotPassword(ForgotPasswordQuery forgotPasswordQuery)
         {
             var resetEmailSent = await _mediator.Send(forgotPasswordQuery);
             return Ok(resetEmailSent);
@@ -59,14 +59,14 @@ namespace PaperStreet.Authentication.Api.Controllers
         
         
         [HttpPost("reset-password")]
-        public async Task<ActionResult> ResetPassword(ResetPassword.Command resetPasswordQuery)
+        public async Task<ActionResult> ResetPassword(ResetPasswordCommand resetPasswordQuery)
         {
             var user = await _mediator.Send(resetPasswordQuery);
             return Ok(user);
         }
 
         [HttpPost("change-password")]
-        public async Task<ActionResult> ChangePassword(ChangePassword.Command changePasswordCommand)
+        public async Task<ActionResult> ChangePassword(ChangePasswordCommand changePasswordCommand)
         {
             var user = await _mediator.Send(changePasswordCommand);
             return Ok(user);

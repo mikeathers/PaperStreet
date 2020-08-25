@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using PaperStreet.Authentication.Application.Interfaces;
+using PaperStreet.Authentication.Application.Queries;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.Errors;
@@ -14,12 +15,11 @@ using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.QueryHandlers
 {
-    public class LoginUserQueryHandler : IRequestHandler<Queries.LoginUser.Query, User>
+    public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, User>
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IEventBus _eventBus;
-        private readonly IFailedIdentityResult _failedIdentityResult;
         
         public LoginUserQueryHandler(UserManager<AppUser> userManager, IJwtGenerator jwtGenerator, IEventBus eventBus)
         {
@@ -28,7 +28,7 @@ namespace PaperStreet.Authentication.Application.QueryHandlers
             _eventBus = eventBus;
         }
 
-        public async Task<User> Handle(Queries.LoginUser.Query request, CancellationToken cancellationToken)
+        public async Task<User> Handle(LoginUserQuery request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
@@ -40,7 +40,7 @@ namespace PaperStreet.Authentication.Application.QueryHandlers
             if (!userSignedIn)
             {
                 var errorMessage = ErrorMessages.UserLoginFailed;
-                _eventBus.Publish(new LogErrorEvent(user.Id, errorMessage));
+                _eventBus.Publish(new ErrorLogEvent(user.Id, errorMessage));
                 throw new RestException(HttpStatusCode.Unauthorized);
             }
             

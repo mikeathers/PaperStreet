@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Application.Queries;
 using PaperStreet.Authentication.Domain.KeyValuePairs;
@@ -15,20 +14,21 @@ using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.QueryHandlers
 {
-    public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPassword.Query, bool>
+    public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordQuery, bool>
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailBuilder _emailBuilder;
         private readonly IEventBus _eventBus;
 
-        public ForgotPasswordCommandHandler(UserManager<AppUser> userManager, IEmailBuilder emailBuilder, IEventBus eventBus)
+        public ForgotPasswordCommandHandler(UserManager<AppUser> userManager, IEmailBuilder emailBuilder,
+            IEventBus eventBus)
         {
             _userManager = userManager;
             _emailBuilder = emailBuilder;
             _eventBus = eventBus;
         }
 
-        public async Task<bool> Handle(ForgotPassword.Query request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ForgotPasswordQuery request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             
@@ -36,7 +36,8 @@ namespace PaperStreet.Authentication.Application.QueryHandlers
 
             var resetPasswordConfirmationCode = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var resetPasswordEmail = _emailBuilder.ResetPasswordEmail(user.FirstName, user.Id, resetPasswordConfirmationCode);
+            var resetPasswordEmail =
+                _emailBuilder.ResetPasswordEmail(user.FirstName, user.Id, resetPasswordConfirmationCode);
 
             var emailToSend = new Email
             {

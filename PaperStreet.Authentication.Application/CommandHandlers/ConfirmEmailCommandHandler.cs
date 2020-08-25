@@ -14,7 +14,7 @@ using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.CommandHandlers
 {
-    public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmail.Command, User>
+    public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, User>
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IJwtGenerator _jwtGenerator;
@@ -30,7 +30,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             _failedIdentityResult = failedIdentityResult;
         }
 
-        public async Task<User> Handle(ConfirmEmail.Command request, CancellationToken cancellationToken)
+        public async Task<User> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             

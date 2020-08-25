@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using PaperStreet.Authentication.Application.CommandHandlers;
-using PaperStreet.Authentication.Application.Commands;
 using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Application.Queries;
 using PaperStreet.Authentication.Application.QueryHandlers;
@@ -24,7 +22,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         private readonly IEmailBuilder _mockEmailBuilder;
         private readonly IEventBus _mockEventBus;
         private readonly AppUser _user;
-        private readonly ForgotPassword.Query _query;
+        private readonly ForgotPasswordQuery _query;
         
         public ForgotPasswordCommandHandlerTests(AuthenticationFixture fixture)
         {
@@ -33,7 +31,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
             _mockEventBus = fixture.EventBus;
             _user = fixture.TestUser;
 
-            _query = new ForgotPassword.Query
+            _query = new ForgotPasswordQuery
             {
                 Email = "test@gmail.com"
             };

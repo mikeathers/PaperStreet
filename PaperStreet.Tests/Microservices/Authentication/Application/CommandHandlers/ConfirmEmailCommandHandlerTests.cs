@@ -22,7 +22,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         private readonly IJwtGenerator _mockJwtGenerator;
         private readonly IEventBus _mockEventBus;
         private readonly IFailedIdentityResult _mockFailedIdentityResult;
-        private readonly ConfirmEmail.Command _command;
+        private readonly ConfirmEmailCommand _command;
         private readonly AppUser _user;
 
         private readonly string _emailConfirmationToken;
@@ -40,7 +40,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _email = "test@gmail.com";
             _emailConfirmationToken = "1010d1d120e";
             
-            _command = new ConfirmEmail.Command
+            _command = new ConfirmEmailCommand
             {
                 Email = _email,
                 EmailConfirmationCode = "1092093dk0230-2"

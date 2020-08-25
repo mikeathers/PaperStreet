@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ using PaperStreet.Domain.Core.Models;
 
 namespace PaperStreet.Authentication.Application.CommandHandlers
 {
-    public class ResetPasswordCommandHandler : IRequestHandler<ResetPassword.Command, bool>
+    public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, bool>
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IEventBus _eventBus;
@@ -31,7 +30,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             _failedIdentityResult = failedIdentityResult;
         }
 
-        public async Task<bool> Handle(ResetPassword.Command request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 

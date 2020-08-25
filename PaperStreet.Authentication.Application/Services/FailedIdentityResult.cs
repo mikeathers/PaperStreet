@@ -23,7 +23,7 @@ namespace PaperStreet.Authentication.Application.Services
             foreach (var error in errors)
             {
                 var errorMessage = ErrorFormatter.FormatIdentityError(error);
-                _eventBus.Publish(new LogErrorEvent(user.Id, errorMessage));
+                _eventBus.Publish(new ErrorLogEvent(user.Id, errorMessage));
             }
             
             throw new Exception(exceptionMessage);

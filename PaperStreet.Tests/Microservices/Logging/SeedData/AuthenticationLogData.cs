@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using PaperStreet.Logging.Data.Context;
 using PaperStreet.Logging.Domain.Models;

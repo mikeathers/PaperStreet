@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +21,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
         private readonly UserManager<AppUser> _mockUserManager;
         private readonly IJwtGenerator _mockJwtGenerator;
         private readonly IEventBus _mockEventBus;
-        private readonly LoginUser.Query _query;
+        private readonly LoginUserQuery _query;
         private readonly AppUser _user;
 
         public LoginUserQueryHandlerTests(AuthenticationFixture fixture)
@@ -33,7 +31,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
             _mockEventBus = fixture.EventBus;
             _user = fixture.TestUser;
             
-            _query = new LoginUser.Query
+            _query = new LoginUserQuery
             {
                 Email = "testuser@gmail.com",
                 Password = "Password123!"
@@ -92,7 +90,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.QueryHandle
             }
             catch
             {
-                _mockEventBus.Received().Publish(Arg.Any<LogErrorEvent>());
+                _mockEventBus.Received().Publish(Arg.Any<ErrorLogEvent>());
             }
         }
         

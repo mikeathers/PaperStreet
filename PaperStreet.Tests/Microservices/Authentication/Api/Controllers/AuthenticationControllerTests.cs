@@ -12,7 +12,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
         [Fact]
         public void GivenRegisterPostMethod_WhenReceivesCorrectCommand_ThenMediatorSendMethodShouldFire()
         {
-            var registerCommand = new RegisterUser.Command
+            var registerCommand = new RegisterUserCommand
             {
                 FirstName = "Test User",
                 Email = "test@gmail.com",
@@ -30,7 +30,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
         [Fact]
         public void GivenLoginPostMethod_WhenReceivesCorrectQuery_ThenMediatorSendMethodShouldFire()
         {
-            var loginQuery = new LoginUser.Query
+            var loginQuery = new LoginUserQuery
             {
                 Email = "test@gmail.com",
                 Password = "password123"
@@ -55,13 +55,13 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
 
             authenticationController.ConfirmEmail(userId, emailConfirmationCode);
 
-            mockMediator.Received().Send(Arg.Any<ConfirmEmail.Command>());
+            mockMediator.Received().Send(Arg.Any<ConfirmEmailCommand>());
         }
         
         [Fact]
         public void GivenForgotPasswordPostMethod_WhenReceivesCorrectQuery_ThenMediatorSendMethodShouldFire()
         {
-            var forgotPasswordQuery = new ForgotPassword.Query
+            var forgotPasswordQuery = new ForgotPasswordQuery
             {
                 Email = "test@gmail.com",
             };
@@ -77,7 +77,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
         [Fact]
         public void GivenResetPasswordPostMethod_WhenReceivesCorrectCommand_ThenMediatorSendMethodShouldFire()
         {
-            var resetPasswordQuery = new ResetPassword.Command
+            var resetPasswordQuery = new ResetPasswordCommand
             {
                 Email = "test@gmail.com",
                 NewPassword = "Password123!",
@@ -95,7 +95,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
         [Fact]
         public void GivenChangePasswordPostMethod_WhenReceivesCorrectCommand_ThenMediatorSendMethodShouldFire()
         {
-            var changePasswordCommand = new ChangePassword.Command
+            var changePasswordCommand = new ChangePasswordCommand
             {
                 Email = "test@gmail.com",
                 NewPassword = "Password123!",

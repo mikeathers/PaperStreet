@@ -16,7 +16,7 @@ namespace PaperStreet.Tests.Microservices.Logging.Api.Controllers
 
             loggingController.GetAllAuthenticationLogs();
 
-            mockMediator.Received().Send(Arg.Any<AllAuthenticationLogs.Query>());
+            mockMediator.Received().Send(Arg.Any<AllAuthenticationLogsQuery>());
         }
         
         [Fact]
@@ -27,7 +27,7 @@ namespace PaperStreet.Tests.Microservices.Logging.Api.Controllers
 
             loggingController.GetAllErrorLogs();
 
-            mockMediator.Received().Send(Arg.Any<AllErrorLogs.Query>());
+            mockMediator.Received().Send(Arg.Any<AllErrorLogsQuery>());
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PaperStreet.Logging.Application.Interfaces;
@@ -17,6 +16,11 @@ namespace PaperStreet.Logging.Data.Repository
         {
             _context = context;
         }
+        
+        public async Task<List<ErrorLog>> GetAllErrorLogs()
+        {
+            return await _context.ErrorLogs.ToListAsync();
+        }
 
         public async Task<ErrorLog> SaveErrorLog(ErrorLog errorLog)
         {
@@ -24,11 +28,6 @@ namespace PaperStreet.Logging.Data.Repository
             var success = await _context.SaveChangesAsync() > 0;
             if (success) return errorLog;
             throw new Exception("Problem saving the error log");
-        }
-
-        public async Task<List<ErrorLog>> GetAllErrorLogs()
-        {
-            return await _context.ErrorLogs.ToListAsync();
         }
     }
 }

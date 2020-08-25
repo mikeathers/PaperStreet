@@ -3,11 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using PaperStreet.Logging.Application.Interfaces;
+using PaperStreet.Logging.Application.Queries;
 using PaperStreet.Logging.Domain.Models;
 
 namespace PaperStreet.Logging.Application.QueryHandlers
 {
-    public class AllAuthenticationLogs : IRequestHandler<Queries.AllAuthenticationLogs.Query, List<AuthenticationLog>>
+    public class AllAuthenticationLogs : IRequestHandler<AllAuthenticationLogsQuery, List<AuthenticationLog>>
     {
         private readonly IAuthenticationLogRepository _authenticationLogRepository;
 
@@ -17,7 +18,7 @@ namespace PaperStreet.Logging.Application.QueryHandlers
         }
 
 
-        public async Task<List<AuthenticationLog>> Handle(Queries.AllAuthenticationLogs.Query request, 
+        public async Task<List<AuthenticationLog>> Handle(Queries.AllAuthenticationLogsQuery request, 
             CancellationToken cancellationToken)
         {
             return await _authenticationLogRepository.GetAllAuthenticationLogs();

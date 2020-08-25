@@ -21,13 +21,13 @@ namespace PaperStreet.Logging.Api.Controllers
         [HttpGet("all-authentication-logs")]
         public async Task<ActionResult<List<AuthenticationLog>>> GetAllAuthenticationLogs()
         {
-            return await _mediator.Send(new AllAuthenticationLogs.Query());
+            return await _mediator.Send(new AllAuthenticationLogsQuery());
         }
 
         [HttpGet("all-error-logs")]
         public async Task<ActionResult<List<ErrorLog>>> GetAllErrorLogs()
         {
-            return await _mediator.Send(new AllErrorLogs.Query());
+            return await _mediator.Send(new AllErrorLogsQuery());
         }
     }
 }

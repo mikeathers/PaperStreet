@@ -23,7 +23,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         private readonly IEventBus _mockEventBus;
         private readonly IEmailBuilder _mockEmailBuilder;
         private readonly IFailedIdentityResult _mockFailedIdentityResult;
-        private readonly ResetPassword.Command _command;
+        private readonly ResetPasswordCommand _command;
         private readonly AppUser _user;
         
         public ResetPasswordCommandHandlerTests(AuthenticationFixture fixture)
@@ -34,7 +34,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _mockFailedIdentityResult = fixture.FailedIdentityResult;
             _user = fixture.TestUser;
 
-            _command = new ResetPassword.Command
+            _command = new ResetPasswordCommand
             {
                 Email = "test@gmail.com",
                 NewPassword = "Password123!",
@@ -100,7 +100,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
 
             await resetPasswordCommandHandler.Handle(_command, CancellationToken.None);
 
-            _mockFailedIdentityResult.Received().Handle(Arg.Any<AppUser>(), Arg.Any<List<IdentityError>>(), Arg.Any<string>());
+            _mockFailedIdentityResult.Received()
+                .Handle(Arg.Any<AppUser>(), Arg.Any<List<IdentityError>>(), Arg.Any<string>());
         }
         
         [Fact]

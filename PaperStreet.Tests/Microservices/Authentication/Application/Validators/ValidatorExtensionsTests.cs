@@ -42,7 +42,8 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.Validators
         [InlineData("PASSWORD123!", false)]
         [InlineData("Password!", false)]
         [InlineData("Password123", false)]
-        public async Task GivenAnInvalidPassword_WhenValidated_ThenShouldBeInvalid(string passwordToTest, bool expectedResult)
+        public async Task GivenAnInvalidPassword_WhenValidated_ThenShouldBeInvalid(string passwordToTest,
+            bool expectedResult)
         {
             var sut = new TestValidations
             {

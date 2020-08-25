@@ -15,13 +15,13 @@ namespace PaperStreet.Tests.Microservices.Logging.Application.EventHandlers
         {
             const string userId = "12340-223d234d";
 
-            var mockLoggingRepository = Substitute.For<IAuthenticationLogRepository>();
-            var authenticationLogEvent =new UserRegisteredEvent(userId);
-            var userRegisteredEventHandler = new AuthenticationLogEventHandler(mockLoggingRepository);
+            var mockAuthenticationLogRepository = Substitute.For<IAuthenticationLogRepository>();
+            var authenticationLogEvent = new UserRegisteredEvent(userId);
+            var userRegisteredEventHandler = new AuthenticationLogEventHandler(mockAuthenticationLogRepository);
             
             await userRegisteredEventHandler.Handle(authenticationLogEvent);
 
-            await mockLoggingRepository.Received().SaveAuthenticationLog(Arg.Any<AuthenticationLog>());
+            await mockAuthenticationLogRepository.Received().SaveAuthenticationLog(Arg.Any<AuthenticationLog>());
         }
     }
 }

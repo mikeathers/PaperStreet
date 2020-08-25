@@ -27,21 +27,10 @@ namespace PaperStreet.Communication.Application.Services
             var emailSentStatusCode = await _sendGridClient.SendEmailAsync(emailToSend);
             if (emailSentStatusCode != HttpStatusCode.Accepted)
             {
-                _eventBus.Publish(new LogErrorEvent(emailToSend.UserId, ErrorMessages.EmailFailedToSend));
+                _eventBus.Publish(new ErrorLogEvent(emailToSend.UserId, ErrorMessages.EmailFailedToSend));
             }
         }
     }
 
-    public class EmailSenderValidator : AbstractValidator<Email>
-    {
-        public EmailSenderValidator()
-        {
-            RuleFor(x => x.FirstName).NotEmpty();
-            RuleFor(x => x.To).NotEmpty();
-            RuleFor(x => x.Subject).NotEmpty();
-            RuleFor(x => x.UserId).NotEmpty();
-            RuleFor(x => x.HtmlContent).NotEmpty();
-            RuleFor(x => x.PlainTextContent).NotEmpty();
-        }
-    }
+    
 }

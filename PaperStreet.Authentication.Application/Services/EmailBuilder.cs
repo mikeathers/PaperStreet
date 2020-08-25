@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +19,8 @@ namespace PaperStreet.Authentication.Application.Services
             var encodedEmailConfirmationCode = HttpUtility.UrlEncode(emailConfirmationCode);
             
             // TODO: Update url to send user to website frontend with token in the url to be passed into an API call on page load  
-            var emailUrl = $"https://{_websiteUrl}/api/v1/authentication/confirm-email/{encodedUserId}/{encodedEmailConfirmationCode}";
+            var emailUrl =
+                $"https://{_websiteUrl}/api/v1/authentication/confirm-email/{encodedUserId}/{encodedEmailConfirmationCode}";
             
             var sb = new StringBuilder();
             
@@ -45,7 +44,8 @@ namespace PaperStreet.Authentication.Application.Services
             var encodedResetPasswordCode = HttpUtility.UrlEncode(resetPasswordConfirmationCode);
             
             // TODO: Update url to send user to website frontend with token in the url to be passed into an API call when user resets password
-            var emailUrl = $"https://{_websiteUrl}/api/v1/authentication/reset-password/{encodedUserId}/{encodedResetPasswordCode}";
+            var emailUrl =
+                $"https://{_websiteUrl}/api/v1/authentication/reset-password/{encodedUserId}/{encodedResetPasswordCode}";
             
             var sb = new StringBuilder();
             
@@ -70,7 +70,8 @@ namespace PaperStreet.Authentication.Application.Services
             sb.Append($"<p>Hi {firstName}</p>");
             sb.Append("<br />");
             sb.Append("<br />");
-            sb.Append("<p>Your password has been changed. If you did not reset change password, please get in touch immediately<p>");
+            sb.Append(
+                "<p>Your password has been changed. If you did not reset change password, please get in touch immediately<p>");
             sb.Append("<br />");
             sb.Append("<br />");
             sb.Append("<p>Thanks<p>");

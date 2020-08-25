@@ -4,12 +4,8 @@ using PaperStreet.Logging.Domain.Models;
 
 namespace PaperStreet.Logging.Application.Queries
 {
-    public class AllAuthenticationLogs
+    public class AllErrorLogsQuery : IRequest<List<ErrorLog>>
     {
-        public class Query : IRequest<List<AuthenticationLog>>
-        {
-            
-        }
         
     }
 }

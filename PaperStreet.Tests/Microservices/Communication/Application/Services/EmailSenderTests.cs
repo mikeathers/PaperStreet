@@ -46,7 +46,7 @@ namespace PaperStreet.Tests.Microservices.Communication.Application.Services
             var emailSender = new EmailSender(_mockSendGridClient, _mockEventBus);
             await emailSender.SendEmail(_emailToSend);
             
-            _mockEventBus.Received().Publish(Arg.Any<LogErrorEvent>());
+            _mockEventBus.Received().Publish(Arg.Any<ErrorLogEvent>());
         }
     }
 }

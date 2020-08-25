@@ -49,7 +49,7 @@ namespace PaperStreet.Authentication.Api
                 options.UseMySql(Configuration.GetConnectionString("AuthenticationDbConnection"));
             });
             
-            services.AddMediatR(typeof(RegisterUser.Command).Assembly);
+            services.AddMediatR(typeof(RegisterUserCommand).Assembly);
 
             RegisterIoCServices(services);
             AddIdentity(services);
@@ -57,7 +57,7 @@ namespace PaperStreet.Authentication.Api
 
             services.AddControllers().AddFluentValidation(cfg => 
             {
-                cfg.RegisterValidatorsFromAssemblyContaining<RegisterUser.Command>();
+                cfg.RegisterValidatorsFromAssemblyContaining<RegisterUserCommand>();
             });
         }
 
