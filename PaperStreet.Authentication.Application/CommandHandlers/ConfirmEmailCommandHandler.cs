@@ -32,7 +32,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
 
         public async Task<User> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var user = await _userManager.FindByIdAsync(request.UserId);
             
             if (user == null)
                 throw new RestException(HttpStatusCode.Unauthorized);

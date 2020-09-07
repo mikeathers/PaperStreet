@@ -26,7 +26,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         private readonly AppUser _user;
 
         private readonly string _emailConfirmationToken;
-        private readonly string _email;
+        private readonly string _userId;
 
         public ConfirmEmailCommandHandlerTests(AuthenticationFixture fixture)
         {
@@ -37,37 +37,36 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
             _user = fixture.TestUser;
             _user.EmailConfirmed = true;
 
-            _email = "test@gmail.com";
+            _userId = "100kjdkwdu8";
             _emailConfirmationToken = "1010d1d120e";
             
             _command = new ConfirmEmailCommand
             {
-                Email = _email,
+                UserId = _userId,
                 EmailConfirmationCode = "1092093dk0230-2"
             };
         }
 
         [Fact]
         public async Task
-            GivenConfirmEmailCommandHandler_WhenReceivesCorrectCommand_ThenShouldCallUserManagerToFindByEmail()
+            GivenConfirmEmailCommandHandler_WhenReceivesCorrectCommand_ThenShouldCallUserManagerToFindById()
         {
+            _mockUserManager.FindByIdAsync(_userId).ReturnsForAnyArgs(_user);
             _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
-            
-            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
 
             var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
                 _mockEventBus, _mockFailedIdentityResult);
 
             await confirmEmailCommandHandler.Handle(_command, CancellationToken.None);
 
-            await _mockUserManager.Received().FindByEmailAsync(_email);
+            await _mockUserManager.Received().FindByIdAsync(_userId);
         }
         
         [Fact]
         public async Task GivenConfirmEmailCommandHandler_WhenUserIsNotFound_ThenShouldThrowRestException()
         {
-            _mockUserManager.FindByEmailAsync(_email).ReturnsNullForAnyArgs();
+            _mockUserManager.FindByIdAsync(_userId).ReturnsNullForAnyArgs();
 
             var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
                 _mockEventBus, _mockFailedIdentityResult);
@@ -80,10 +79,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         public async Task
             GivenConfirmEmailCommandHandler_WhenEmailConfirmFails_ThenShouldCallFailedIdentityResult()
         {
+            _mockUserManager.FindByIdAsync(_userId).ReturnsForAnyArgs(_user);
             _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Failed()));
-            
-            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
 
             var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
                 _mockEventBus, _mockFailedIdentityResult);
@@ -98,10 +96,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         public async Task
             GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldCallJwtGenerator()
         {
+            _mockUserManager.FindByIdAsync(_userId).ReturnsForAnyArgs(_user);
             _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
-            
-            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
 
             var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
                 _mockEventBus, _mockFailedIdentityResult);
@@ -116,10 +113,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         public async Task
             GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldCallUserManagerToUpdateUser()
         {
+            _mockUserManager.FindByIdAsync(_userId).ReturnsForAnyArgs(_user);
             _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
-            
-            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
 
             var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
                 _mockEventBus, _mockFailedIdentityResult);
@@ -132,10 +128,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         [Fact]
         public async Task GivenConfirmEmailCommandHandler_WhenEmailConfirmed_ThenShouldPublishAuthenticationLogEvent()
         {
+            _mockUserManager.FindByIdAsync(_userId).ReturnsForAnyArgs(_user);
             _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
-            
-            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
 
             var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
                 _mockEventBus, _mockFailedIdentityResult);
@@ -149,10 +144,9 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.CommandHand
         public async Task
             GivenConfirmEmailCommandHandler_WhenReceivesCorrectCommand_ThenShouldConfirmUserAccountAndReturnUser()
         {
+            _mockUserManager.FindByIdAsync(_userId).ReturnsForAnyArgs(_user);
             _mockUserManager.ConfirmEmailAsync(_user, _emailConfirmationToken)
                 .ReturnsForAnyArgs(Task.FromResult(IdentityResult.Success));
-            
-            _mockUserManager.FindByEmailAsync(_email).ReturnsForAnyArgs(_user);
 
             var confirmEmailCommandHandler = new ConfirmEmailCommandHandler(_mockUserManager, _mockJwtGenerator,
                 _mockEventBus, _mockFailedIdentityResult);

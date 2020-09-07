@@ -37,7 +37,7 @@ namespace PaperStreet.Authentication.Application.CommandHandlers
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             
             if (existingUser != null)
-                throw new RestException(HttpStatusCode.BadRequest, new {Email = "Email already exists"});
+                throw new RestException(HttpStatusCode.BadRequest, new {Email = "UserId already exists"});
 
             var user = new AppUser
             {

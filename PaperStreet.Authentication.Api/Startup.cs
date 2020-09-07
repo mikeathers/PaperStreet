@@ -1,11 +1,17 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,14 +41,10 @@ namespace PaperStreet.Authentication.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Authentication Microservice",
-                    Version = "v1"
-                });
-            });
+            RegisterIoCServices(services);
+            AddIdentity(services);
+            AddJwtAuthentication(services, Configuration);
+            AddSwagger(services);
             
             services.AddDbContext<AuthenticationDbContext>(options =>
             {
@@ -51,13 +53,51 @@ namespace PaperStreet.Authentication.Api
             
             services.AddMediatR(typeof(RegisterUserCommand).Assembly);
 
-            RegisterIoCServices(services);
-            AddIdentity(services);
-            AddJwtAuthentication(services, Configuration);
+            services
+                .AddControllers(opt =>
+                {
+                    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                    opt.Filters.Add(new AuthorizeFilter(policy));
+                })
+                .AddFluentValidation(cfg => 
+                {
+                    cfg.RegisterValidatorsFromAssemblyContaining<RegisterUserCommand>();
+                });
+        }
 
-            services.AddControllers().AddFluentValidation(cfg => 
+        private static void AddSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
             {
-                cfg.RegisterValidatorsFromAssemblyContaining<RegisterUserCommand>();
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Authentication Microservice",
+                    Version = "v1"
+                });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header using the Bearer scheme. <br /> 
+                      Enter 'Bearer' [space] and then your token in the text input below. </br >
+                      Example: 'Bearer 12345abcdef'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
         }
 
