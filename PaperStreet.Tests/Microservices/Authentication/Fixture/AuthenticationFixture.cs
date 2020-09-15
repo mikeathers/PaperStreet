@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
@@ -16,9 +17,11 @@ namespace PaperStreet.Tests.Microservices.Authentication.Fixture
         public IEventBus EventBus { get; private set; }
         public IEmailBuilder EmailBuilder { get; private set; }
         public IUserConfirmationEmail UserConfirmationEmail { get; private set; }
-        
         public IFailedIdentityResult FailedIdentityResult { get; private set; }
-        
+        public  string UserRefreshToken { get; set; }
+        public DateTime UserRefreshTokenExpiry { get; set; }
+
+
         public AuthenticationFixture()
         {
             CreateFixtureData();
@@ -26,11 +29,20 @@ namespace PaperStreet.Tests.Microservices.Authentication.Fixture
 
         private void CreateFixtureData()
         {
+            const string userRefreshToken = "20202020";
+            var userRefreshTokenExpiry = DateTime.Now.AddHours(1);
+            
             var createdUser = Substitute.For<AppUser>();
             createdUser.Id = "0001";
             createdUser.UserName = "testuser@gmail.com";
             createdUser.Email = "testuser@gmail.com";
             createdUser.FirstName = "Test User";
+            createdUser.RefreshToken = userRefreshToken;
+            createdUser.RefreshTokenExpiry = userRefreshTokenExpiry;
+
+            UserRefreshToken = userRefreshToken;
+            UserRefreshTokenExpiry = userRefreshTokenExpiry;
+
             TestUser = createdUser;
 
             var store = Substitute.For<IUserStore<AppUser>>();

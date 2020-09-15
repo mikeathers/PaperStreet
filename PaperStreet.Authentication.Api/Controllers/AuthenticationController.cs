@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PaperStreet.Authentication.Application.Commands;
+using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Application.Queries;
 using PaperStreet.Authentication.Domain.Models;
 
@@ -10,15 +13,18 @@ namespace PaperStreet.Authentication.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize]
     public class AuthenticationController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ITokenHandler _tokenHandler;
 
-        public AuthenticationController(IMediator mediator)
+        public AuthenticationController(IMediator mediator, ITokenHandler tokenHandler)
         {
             _mediator = mediator;
+            _tokenHandler = tokenHandler;
         }
-
+        
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(RegisterUserCommand command)
@@ -70,6 +76,15 @@ namespace PaperStreet.Authentication.Api.Controllers
         {
             var user = await _mediator.Send(changePasswordCommand);
             return Ok(user);
+        }
+        
+        [AllowAnonymous]
+        [HttpPost("refresh")]
+        public async Task<ActionResult<User>> Refresh(RefreshTokenQuery query)
+        {
+            var principal = _tokenHandler.GetPrincipalFromExpiredToken(query.Token);
+            query.Email = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            return await _mediator.Send(query);
         }
     }
 }

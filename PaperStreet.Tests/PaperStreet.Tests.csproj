@@ -25,4 +25,8 @@
       <ProjectReference Include="..\PaperStreet.Logging.Api\PaperStreet.Logging.Api.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Microservices\Reservation" />
+    </ItemGroup>
+
 </Project>

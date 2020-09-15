@@ -1,7 +1,10 @@
+using System.Security.Claims;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using PaperStreet.Authentication.Api.Controllers;
 using PaperStreet.Authentication.Application.Commands;
+using PaperStreet.Authentication.Application.Interfaces;
 using PaperStreet.Authentication.Application.Queries;
 using Xunit;
 
@@ -9,6 +12,15 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
 {
     public class AuthenticationControllerTests
     {
+        private readonly IMediator _mockMediator;
+        private readonly ITokenHandler _mockTokenHandler;
+        
+        public AuthenticationControllerTests()
+        {
+            _mockTokenHandler =  Substitute.For<ITokenHandler>();;
+            _mockMediator = Substitute.For<IMediator>();
+        }
+        
         [Fact]
         public void GivenRegisterPostMethod_WhenReceivesCorrectCommand_ThenMediatorSendMethodShouldFire()
         {
@@ -19,12 +31,11 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
                 Password = "password123"
             };
             
-            var mockMediator = Substitute.For<IMediator>();
-            var authenticationController = new AuthenticationController(mockMediator);
+            var authenticationController = new AuthenticationController(_mockMediator, _mockTokenHandler);
 
             authenticationController.Register(registerCommand);
 
-            mockMediator.Received().Send(registerCommand);
+            _mockMediator.Received().Send(registerCommand);
         }
         
         [Fact]
@@ -36,12 +47,11 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
                 Password = "password123"
             };
             
-            var mockMediator = Substitute.For<IMediator>();
-            var authenticationController = new AuthenticationController(mockMediator);
+            var authenticationController = new AuthenticationController(_mockMediator, _mockTokenHandler);
 
             authenticationController.Login(loginQuery);
 
-            mockMediator.Received().Send(loginQuery);
+            _mockMediator.Received().Send(loginQuery);
         }
         
         [Fact]
@@ -50,12 +60,11 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
             const string userId = "001";
             const string emailConfirmationCode = "101010";
 
-            var mockMediator = Substitute.For<IMediator>();
-            var authenticationController = new AuthenticationController(mockMediator);
+            var authenticationController = new AuthenticationController(_mockMediator, _mockTokenHandler);
 
             authenticationController.ConfirmEmail(userId, emailConfirmationCode);
 
-            mockMediator.Received().Send(Arg.Any<ConfirmEmailCommand>());
+            _mockMediator.Received().Send(Arg.Any<ConfirmEmailCommand>());
         }
         
         [Fact]
@@ -66,12 +75,11 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
                 Email = "test@gmail.com",
             };
             
-            var mockMediator = Substitute.For<IMediator>();
-            var authenticationController = new AuthenticationController(mockMediator);
+            var authenticationController = new AuthenticationController(_mockMediator, _mockTokenHandler);
 
             authenticationController.ForgotPassword(forgotPasswordQuery);
 
-            mockMediator.Received().Send(forgotPasswordQuery);
+            _mockMediator.Received().Send(forgotPasswordQuery);
         }
         
         [Fact]
@@ -84,12 +92,11 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
                 ResetPasswordToken = "10101010"
             };
             
-            var mockMediator = Substitute.For<IMediator>();
-            var authenticationController = new AuthenticationController(mockMediator);
+            var authenticationController = new AuthenticationController(_mockMediator, _mockTokenHandler);
 
             authenticationController.ResetPassword(resetPasswordQuery);
 
-            mockMediator.Received().Send(resetPasswordQuery);
+            _mockMediator.Received().Send(resetPasswordQuery);
         }
         
         [Fact]
@@ -102,12 +109,47 @@ namespace PaperStreet.Tests.Microservices.Authentication.Api.Controllers
                 CurrentPassword = "Password1!"
             };
             
-            var mockMediator = Substitute.For<IMediator>();
-            var authenticationController = new AuthenticationController(mockMediator);
+            var authenticationController = new AuthenticationController(_mockMediator, _mockTokenHandler);
 
             authenticationController.ChangePassword(changePasswordCommand);
 
-            mockMediator.Received().Send(changePasswordCommand);
+            _mockMediator.Received().Send(changePasswordCommand);
+        }
+
+        [Fact]
+        public void GivenRefreshTokenPostMethod_WhenReceivesCorrectQuery_ThenShouldCallGetPrincipalFromExpiredToken()
+        {
+            var refreshTokenQuery = new RefreshTokenQuery
+            {
+                RefreshToken = "10101010",
+                Token = "2020202",
+                Email = "test@gmail.com"
+            };
+            
+            var authenticationController = new AuthenticationController(_mockMediator, _mockTokenHandler);
+
+            authenticationController.Refresh(refreshTokenQuery);
+            
+            _mockTokenHandler.Received().GetPrincipalFromExpiredToken(Arg.Any<string>());
+        }
+        
+        [Fact]
+        public void GivenRefreshTokenPostMethod_WhenReceivesCorrectQuery_ThenMediatorSendMethodShouldFire()
+        {
+            var mockClaimsPrincipal = Substitute.For<ClaimsPrincipal>();
+            var refreshTokenQuery = new RefreshTokenQuery
+            {
+                RefreshToken = "10101010",
+                Token = "2020202"
+            };
+
+            _mockTokenHandler.GetPrincipalFromExpiredToken(refreshTokenQuery.Token).ReturnsForAnyArgs(mockClaimsPrincipal);
+            
+            var authenticationController = new AuthenticationController(_mockMediator, _mockTokenHandler);
+
+            authenticationController.Refresh(refreshTokenQuery);
+            
+            _mockMediator.Received().Send(refreshTokenQuery);
         }
     }
 }

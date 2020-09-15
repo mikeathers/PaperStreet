@@ -8,5 +8,6 @@ namespace PaperStreet.Domain.Core.KeyValuePairs
         public static string UserRegistered => "UserRegistered";
         public static string ResetPasswordRequest => "ResetPasswordRequest";
         public static string ResetPassword => "UserResetPassword";
+        public static string UpdatedRefreshToken => "UserUpdatedRefreshToken";
     }
 }

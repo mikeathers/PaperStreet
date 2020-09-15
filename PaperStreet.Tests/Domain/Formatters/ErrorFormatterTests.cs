@@ -13,11 +13,11 @@ namespace PaperStreet.Tests.Domain.Formatters
             var error = new IdentityError
             {
                 Code = "1",
-                Description = "First Error"
+                Description = "First ErrorCode"
             };
 
             var formattedString = ErrorFormatter.FormatIdentityError(error);
-            const string expectedString = "Error Code: 1, Error Message: First Error.";
+            const string expectedString = "ErrorCode ErrorCode: 1, ErrorCode Message: First ErrorCode.";
             
             Assert.Equal(formattedString, expectedString);
         }

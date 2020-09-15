@@ -25,7 +25,7 @@ namespace PaperStreet.Tests.Microservices.Logging.SeedData
             {
                 new ErrorLog
                 {
-                    ErrorMessage = "Error Message",
+                    ErrorMessage = "ErrorCode Message",
                     MessageType = "ErrorLog",
                     Timestamp = DateTime.Now,
                     UserId = "1010101"
@@ -39,14 +39,14 @@ namespace PaperStreet.Tests.Microservices.Logging.SeedData
             {
                 new ErrorLog
                 {
-                    ErrorMessage = "Error Message",
+                    ErrorMessage = "ErrorCode Message",
                     MessageType = "ErrorLog",
                     Timestamp = DateTime.Now,
                     UserId = "1010101"
                 },
                 new ErrorLog
                 {
-                    ErrorMessage = "Error Message 2",
+                    ErrorMessage = "ErrorCode Message 2",
                     MessageType = "ErrorLog",
                     Timestamp = DateTime.Now,
                     UserId = "1010101"

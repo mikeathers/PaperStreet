@@ -8,7 +8,7 @@ namespace PaperStreet.Domain.Core.Formatters
     {
         public static string FormatIdentityError(IdentityError error)
         {
-            return $"Error Code: {error.Code}, Error Message: {error.Description}.";
+            return $"ErrorCode ErrorCode: {error.Code}, ErrorCode Message: {error.Description}.";
         }
     }
 }

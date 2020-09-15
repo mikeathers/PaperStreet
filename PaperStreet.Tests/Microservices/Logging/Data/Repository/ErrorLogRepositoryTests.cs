@@ -24,7 +24,7 @@ namespace PaperStreet.Tests.Microservices.Logging.Data.Repository
 
                 var errorLog = new ErrorLog
                 {
-                    ErrorMessage = "Test Error Message",
+                    ErrorMessage = "Test ErrorCode Message",
                     MessageType = "ErrorLog",
                     Timestamp = DateTime.Now,
                     UserId = "1010101"

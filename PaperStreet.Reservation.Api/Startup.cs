@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,17 +13,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PaperStreet.Authentication.Api.Middleware;
-using PaperStreet.Authentication.Application.Commands;
-using PaperStreet.Authentication.Application.Interfaces;
-using PaperStreet.Authentication.Application.Services;
-using PaperStreet.Authentication.Data.Context;
-using PaperStreet.Authentication.Domain.Models;
-using PaperStreet.Authentication.Infra.Security;
+using PaperStreet.Reservation.Api.Middleware;
+using PaperStreet.Reservation.Data.Context;
 using PaperStreet.Infra.IoC;
-using TokenHandler = PaperStreet.Authentication.Application.Services.TokenHandler;
 
-namespace PaperStreet.Authentication.Api
+namespace PaperStreet.Reservation.Api
 {
     public class Startup
     {
@@ -39,16 +32,15 @@ namespace PaperStreet.Authentication.Api
         public void ConfigureServices(IServiceCollection services)
         {
             RegisterIoCServices(services);
-            AddIdentity(services);
             AddJwtAuthentication(services, Configuration);
             AddSwagger(services);
             
-            services.AddDbContext<AuthenticationDbContext>(options =>
+            services.AddDbContext<ReservationDbContext>(options =>
             {
-                options.UseMySql(Configuration.GetConnectionString("AuthenticationDbConnection"));
+                options.UseMySql(Configuration.GetConnectionString("ReservationDbConnection"));
             });
             
-            services.AddMediatR(typeof(RegisterUserCommand).Assembly);
+            //services.AddMediatR(typeof(RegisterUserCommand).Assembly);
             
             services.AddCors(opt => 
             {
@@ -66,7 +58,7 @@ namespace PaperStreet.Authentication.Api
                 })
                 .AddFluentValidation(cfg => 
                 {
-                    cfg.RegisterValidatorsFromAssemblyContaining<RegisterUserCommand>();
+                    //cfg.RegisterValidatorsFromAssemblyContaining<RegisterUserCommand>();
                 });
         }
 
@@ -124,32 +116,9 @@ namespace PaperStreet.Authentication.Api
                 });
         }
 
-        private static void AddIdentity(IServiceCollection services)
-        {
-            var builder = services.AddIdentityCore<AppUser>();
-            var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
-            identityBuilder.AddEntityFrameworkStores<AuthenticationDbContext>();
-            identityBuilder.AddSignInManager<SignInManager<AppUser>>();
-            identityBuilder.AddDefaultTokenProviders();
-            
-            // Confirmation token timespan (confirm email, password reset)
-            services.Configure<DataProtectionTokenProviderOptions>(o =>
-                o.TokenLifespan = TimeSpan.FromHours(3));
-        }
-
         private static void RegisterIoCServices(IServiceCollection services)
         {
             RegisterEventBus.RegisterServices(services);
-            
-            // Application Services
-            services.AddTransient<IJwtGenerator, JwtGenerator>();
-            services.AddTransient<IUserConfirmationEmail, UserConfirmationEmail>();
-            services.AddTransient<IEmailBuilder, EmailBuilder>();
-            services.AddTransient<IFailedIdentityResult, FailedIdentityResult>();
-            services.AddTransient<ITokenHandler, TokenHandler>();
-            
-            // Data
-            services.AddTransient<AuthenticationDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -167,13 +136,12 @@ namespace PaperStreet.Authentication.Api
             app.UseRouting();
             app.UseCors("CorsPolicy");
 
-            app.UseAuthentication();
             app.UseAuthorization();
             
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Microservice v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Reservation Microservice v1");
             });
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

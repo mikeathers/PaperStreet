@@ -6,6 +6,7 @@ using PaperStreet.Authentication.Application.Services;
 using PaperStreet.Authentication.Domain.Models;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Events.Errors;
+using PaperStreet.Domain.Core.Models;
 using PaperStreet.Tests.Microservices.Authentication.Fixture;
 using Xunit;
 
@@ -25,12 +26,12 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.Services
                 new IdentityError
                 {
                     Code = "1",
-                    Description = "First Error"
+                    Description = "First ErrorCode"
                 },
                 new IdentityError
                 {
                     Code = "2",
-                    Description = "Second Error"
+                    Description = "Second ErrorCode"
                 }
             }; 
         }
@@ -42,7 +43,7 @@ namespace PaperStreet.Tests.Microservices.Authentication.Application.Services
             var mockEventBus = Substitute.For<IEventBus>();
             var failedIdentityResult = new FailedIdentityResult(mockEventBus);
         
-            Assert.Throws<Exception>(() => failedIdentityResult.Handle(_user, _errors, exception));
+            Assert.Throws<RestException>(() => failedIdentityResult.Handle(_user, _errors, exception));
         }
         
         [Fact]

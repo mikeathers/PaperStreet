@@ -1,17 +1,18 @@
 using System;
+using System.Collections;
 using System.Net;
 
 namespace PaperStreet.Domain.Core.Models
 {
     public class RestException : Exception
     {
-        public RestException(HttpStatusCode code, object errors = null)
+        public RestException(HttpStatusCode errorCode, IEnumerable errors = null)
         {
-            Code = code;
+            ErrorCode = errorCode;
             Errors = errors;
         }
 
-        public HttpStatusCode Code { get; }
+        public HttpStatusCode ErrorCode { get; }
         public object Errors { get; }
     }
 }
