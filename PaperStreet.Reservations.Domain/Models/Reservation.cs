@@ -1,9 +1,10 @@
 using System;
 
-namespace PaperStreet.Reservation.Domain.Models
+namespace PaperStreet.Reservations.Domain.Models
 {
     public class Reservation
     {
+        public int Id { get; set; }
         public DateTime DateTime { get; set; }
         public string Name { get; set; }
         public string UserId { get; set; }

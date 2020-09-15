@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace PaperStreet.Authentication.Domain.Validators
+namespace PaperStreet.Authentication.Application.Validators
 {
     public static class ValidatorExtensions
     {

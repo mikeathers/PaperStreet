@@ -2,11 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>PaperStreet.Reservation.Data</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Folder Include="Repository" />
-    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
@@ -19,6 +16,11 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PaperStreet.Reservations.Application\PaperStreet.Reservations.Application.csproj" />
+      <ProjectReference Include="..\PaperStreet.Reservations.Domain\PaperStreet.Reservations.Domain.csproj" />
     </ItemGroup>
 
 </Project>

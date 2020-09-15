@@ -13,11 +13,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PaperStreet.Reservation.Api.Middleware;
-using PaperStreet.Reservation.Data.Context;
+using PaperStreet.Reservations.Api.Middleware;
+using PaperStreet.Reservations.Data.Context;
 using PaperStreet.Infra.IoC;
 
-namespace PaperStreet.Reservation.Api
+namespace PaperStreet.Reservations.Api
 {
     public class Startup
     {

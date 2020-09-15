@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace PaperStreet.Reservation.Data.Context
+namespace PaperStreet.Reservations.Data.Context
 {
     public class ReservationDbContext : DbContext
     {
@@ -13,5 +13,7 @@ namespace PaperStreet.Reservation.Data.Context
         {
             
         }
+
+        public DbSet<Domain.Models.Reservation> Reservations { get; set; }
     }
 }

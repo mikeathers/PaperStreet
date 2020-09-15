@@ -23,10 +23,12 @@
       <ProjectReference Include="..\PaperStreet.Authentication.Domain\PaperStreet.Authentication.Domain.csproj" />
       <ProjectReference Include="..\PaperStreet.Communication.Api\PaperStreet.Communication.Api.csproj" />
       <ProjectReference Include="..\PaperStreet.Logging.Api\PaperStreet.Logging.Api.csproj" />
+      <ProjectReference Include="..\PaperStreet.Reservations.Application\PaperStreet.Reservations.Application.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Microservices\Reservation" />
+      <Folder Include="Microservices\Reservations\Api" />
+      <Folder Include="Microservices\Reservations\Data\Repository" />
     </ItemGroup>
 
 </Project>

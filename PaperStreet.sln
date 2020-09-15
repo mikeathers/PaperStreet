@@ -74,7 +74,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Communication.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Communication.Domain", "PaperStreet.Communication.Domain\PaperStreet.Communication.Domain.csproj", "{D752529D-E90F-4109-B4CD-2284BD0E7658}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reservation", "Reservation", "{05A7922A-2456-48A5-B93C-1FE5D9FE4B9B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reservations", "Reservations", "{05A7922A-2456-48A5-B93C-1FE5D9FE4B9B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{03582023-C229-42F9-87BE-DB37939B496C}"
 EndProject
@@ -84,13 +84,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{6ABA8134-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{DBC3E8AE-EBD7-4A54-86E9-3686BD357048}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Reservation.Api", "PaperStreet.Reservation.Api\PaperStreet.Reservation.Api.csproj", "{F170AA14-946B-4EF3-893F-45DD28F78FF5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Reservations.Api", "PaperStreet.Reservations.Api\PaperStreet.Reservations.Api.csproj", "{F170AA14-946B-4EF3-893F-45DD28F78FF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Reservation.Data", "PaperStreet.Reservation.Data\PaperStreet.Reservation.Data.csproj", "{51E7BCA7-60C7-4678-BF70-9861173EAACA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Reservations.Data", "PaperStreet.Reservations.Data\PaperStreet.Reservations.Data.csproj", "{51E7BCA7-60C7-4678-BF70-9861173EAACA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Reservation.Domain", "PaperStreet.Reservation.Domain\PaperStreet.Reservation.Domain.csproj", "{EAC2D50C-275C-4E66-9AA1-1354095FDD17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Reservations.Domain", "PaperStreet.Reservations.Domain\PaperStreet.Reservations.Domain.csproj", "{EAC2D50C-275C-4E66-9AA1-1354095FDD17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Reservation.Application", "PaperStreet.Reservation.Application\PaperStreet.Reservation.Application.csproj", "{129B50DF-C45D-4F18-B812-5F7FFA171E3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperStreet.Reservations.Application", "PaperStreet.Reservations.Application\PaperStreet.Reservations.Application.csproj", "{129B50DF-C45D-4F18-B812-5F7FFA171E3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

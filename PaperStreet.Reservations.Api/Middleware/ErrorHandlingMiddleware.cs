@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using PaperStreet.Domain.Core.Bus;
 using PaperStreet.Domain.Core.Models;
 
-namespace PaperStreet.Reservation.Api.Middleware
+namespace PaperStreet.Reservations.Api.Middleware
 {
     public class ErrorHandlingMiddleware
     {

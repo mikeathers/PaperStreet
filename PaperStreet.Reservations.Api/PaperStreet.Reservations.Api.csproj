@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>PaperStreet.Reservation.Api</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,7 +12,7 @@
     <ItemGroup>
       <ProjectReference Include="..\PaperStreet.Domain.Core\PaperStreet.Domain.Core.csproj" />
       <ProjectReference Include="..\PaperStreet.Infra.IoC\PaperStreet.Infra.IoC.csproj" />
-      <ProjectReference Include="..\PaperStreet.Reservation.Data\PaperStreet.Reservation.Data.csproj" />
+      <ProjectReference Include="..\PaperStreet.Reservations.Data\PaperStreet.Reservations.Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>
